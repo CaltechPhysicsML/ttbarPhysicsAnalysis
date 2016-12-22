@@ -2,7 +2,7 @@ import ROOT as rt
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn
-from rootpy.plotting import Hist, HistStack, Graph, Canvas
+from rootpy.plotting import Hist, HistStack, Graph, Canvas, Legend
 from rootpy.plotting.style import get_style, set_style
 from rootpy.interactive import wait
 from rootpy.plotting.utils import draw
@@ -45,33 +45,39 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     #numJets_wjet = []
     
     
-    numJets_tt = Hist(NBINS,NLO,NHI)
-    numJets_qcd = Hist(NBINS,NLO,NHI)
-    numJets_wjet = Hist(NBINS,NLO,NHI)
+    numJets_tt = Hist(NBINS,NLO,NHI, title = 'numJets_tt', legendstyle = 'L')
+    numJets_qcd = Hist(NBINS,NLO,NHI, title = 'numJets_qcd', legendstyle = 'L')
+    numJets_wjet = Hist(NBINS,NLO,NHI, title = 'numJets_wjet', legendstyle = 'L')
     
-    
+    sumtt = 0
+    sumqcd = 0
+    sumwjet = 0
     
     # to loop over all entries in the tree:
     for e in range(tt_n_entries):
         entry = t_tt.GetEntry(e)
         numJets_tt.Fill(leaf_tt.GetLen())
+        sumtt += leaf_tt.GetLen()
         #numJets_tt.append(leaf_tt.GetLen())
     
     for e in range(qcd_n_entries):    
         entry = t_qcd.GetEntry(e)
         numJets_qcd.Fill(leaf_qcd.GetLen())
+        sumqcd += leaf_qcd.GetLen()
         #numJets_qcd.append(leaf_qcd.GetLen())
     
     for e in range(wjet_n_entries):    
         t_wjet.GetEntry(e)
         numJets_wjet.Fill(leaf_wjet.GetLen())
+        sumwjet += leaf_wjet.GetLen()
         #numJets_wjet.append(leaf_wjet.GetLen())
 
+    #print "HERE: sum: %d nentries: %d" % (sumtt, tt_n_entries)
    
     #normalize
-    numJets_tt /= tt_n_entries
-    numJets_qcd /= qcd_n_entries
-    numJets_wjet /= wjet_n_entries
+    numJets_tt /= sumtt
+    numJets_qcd /= sumqcd
+    numJets_wjet /= sumwjet
     
     #set_style('ATLAS')
     
@@ -86,6 +92,12 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     canvas = Canvas()
     stack = HistStack([numJets_tt, numJets_qcd, numJets_wjet], drawstyle='HIST')
     stack.Draw()
+    
+    #make legend
+    l1 = Legend([numJets_tt, numJets_qcd, numJets_wjet], textfont = 42, textsize = .03)
+    l1.Draw()
+    canvas.Modified()
+    canvas.Update()
     
     
     #numJets_tt.Draw()

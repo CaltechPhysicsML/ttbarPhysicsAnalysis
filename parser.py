@@ -104,11 +104,20 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     numJets_qcd.SetLineColor('green')
     numJets_wjet.SetLineColor('red')
     
+    numJets_tt.SetFillColor(None)
+    numJets_qcd.SetFillColor(None)
+    numJets_wjet.SetFillColor(None)
+    
     
     #begin drawing stuff
     canvas = Canvas()
-    stack = HistStack([numJets_tt, numJets_qcd, numJets_wjet], drawstyle='HIST')
-    stack.Draw()
+    #stack = HistStack([numJets_wjet, numJets_tt, numJets_qcd], drawstyle='HIST')
+    #stack.Draw()
+    numJets_wjet.SetStats(0)
+    numJets_wjet.Draw('HIST')
+    numJets_tt.Draw('HIST SAME')
+    numJets_qcd.Draw('HIST SAME')
+    
     
     #make legend
     l1 = Legend([numJets_tt, numJets_qcd, numJets_wjet], textfont = 42, textsize = .03)

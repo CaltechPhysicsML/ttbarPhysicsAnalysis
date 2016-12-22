@@ -9,17 +9,16 @@ from rootpy.plotting.utils import draw
 import rootpy.plotting.root2matplotlib as rplt
 
 
-f_tt = rt.TFile("../../ttbar_data/ttbar_lepFilter_13TeV_313.root")
-f_qcd = rt.TFile("../../ttbar_data/qcd_lepFilter_13TeV_10.root")
-f_wjet = rt.TFile("../../ttbar_data/wjets_lepFilter_13TeV_3.root")
 
    
-def simple_delphes_parser(filepath1, filepath2, filepath3):
+def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     
     # DEFINE CONSTANTS HERE
     NBINS = 15
     NLO = 0
     NHI = 15
+    
+    JETPT_THRESHOLD = 30 #GeV
     
     # get trees from files
     t_tt = f_tt.Get("Delphes")
@@ -39,78 +38,102 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     leaf_tt = t_tt.GetLeaf(var_tt)
     leaf_qcd = t_qcd.GetLeaf(var_qcd)
     leaf_wjet = t_wjet.GetLeaf(var_wjet)
+   
     
-    #numJets_tt = []
-    #numJets_qcd = []
-    #numJets_wjet = []
-    
-    
+    # create the histograms
     numJets_tt = Hist(NBINS,NLO,NHI, title = 'numJets_tt', legendstyle = 'L')
     numJets_qcd = Hist(NBINS,NLO,NHI, title = 'numJets_qcd', legendstyle = 'L')
     numJets_wjet = Hist(NBINS,NLO,NHI, title = 'numJets_wjet', legendstyle = 'L')
     
-    #sumtt = 0
-    #sumqcd = 0
-    #sumwjet = 0
+
+   
+    # FILLING THE TREE
+
+    # TT
     
     # to loop over all entries in the tree:
     for e in range(tt_n_entries):
         entry = t_tt.GetEntry(e)
-        numJets_tt.Fill(leaf_tt.GetLen())
-        #sumtt += leaf_tt.GetLen()
-        #numJets_tt.append(leaf_tt.GetLen())
+        
+        # counter for number of values per entry > JETPT_THRESHOLD
+        cntr = 0
+        
+        #iterate through each value in leaf of jet pts
+        for i in range(leaf_tt.GetLen()):
+            curr_val = leaf_tt.GetValue(i) # get the value
+            
+            # only care about values with > JETPT_THRESHOLD
+            if (curr_val > JETPT_THRESHOLD):
+                #print "JET PT VAL: %f" % curr_val # to see if in order
+                cntr += 1
+        
+        # get number of jets with jetpt > JETPT_THRESHOLD        
+        numJets_tt.Fill(cntr) 
+        #print "LENGTH: %f: " % lentt
+
+    # QCD
     
     for e in range(qcd_n_entries):    
         entry = t_qcd.GetEntry(e)
-        numJets_qcd.Fill(leaf_qcd.GetLen())
-        #sumqcd += leaf_qcd.GetLen()
-        #numJets_qcd.append(leaf_qcd.GetLen())
+        
+        # counter for number of values per entry > JETPT_THRESHOLD
+        cntr = 0
+        
+        #iterate through each value in leaf of jet pts
+        for i in range(leaf_qcd.GetLen()):
+            curr_val = leaf_qcd.GetValue(i) # get the value
+            
+            # only care about values with > JETPT_THRESHOLD
+            if (curr_val > JETPT_THRESHOLD):
+                #print "JET PT VAL: %f" % curr_val # to see if in order
+                cntr += 1
+        
+        # get number of jets with jetpt > JETPT_THRESHOLD 
+        numJets_qcd.Fill(cntr)
+
+    # WJET
     
     for e in range(wjet_n_entries):    
         t_wjet.GetEntry(e)
-        numJets_wjet.Fill(leaf_wjet.GetLen())
-        #sumwjet += leaf_wjet.GetLen()
-        #numJets_wjet.append(leaf_wjet.GetLen())
+        
+        # counter for number of values per entry > JETPT_THRESHOLD
+        cntr = 0
+        
+        #iterate through each value in leaf of jet pts
+        for i in range(leaf_wjet.GetLen()):
+            curr_val = leaf_wjet.GetValue(i) # get the value
+            
+            # only care about values with > JETPT_THRESHOLD
+            if (curr_val > JETPT_THRESHOLD):
+                #print "JET PT VAL: %f" % curr_val # to see if in order
+                cntr += 1
+        
+        # get number of jets with jetpt > JETPT_THRESHOLD 
+        numJets_wjet.Fill(cntr)
 
-    #print "HERE: sum: %d nentries: %d" % (sumtt, tt_n_entries)
-   
-   
-    #normtt = numJets_tt.Integral()
-    #print "FIRST INTEGRAL VAL: %f TTENTRIES: %f" % (normtt, (tt_n_entries - 1))
     
-    #normqcd = numJets_qcd.Integral()
-    #normwjet = numJets_wjet.Integral()
-    
+    # get float version of num entries to normalize below; subtract 1 to get 
+    # actual integral value of hist
     normtt = float(tt_n_entries - 1)
     normqcd = float(qcd_n_entries - 1)
     normwjet = float(wjet_n_entries - 1)
     
-    #normalize
-    #numJets_tt /= tt_n_entries
+    # normalize
     numJets_tt.Scale(1/normtt)
-    #numJets_qcd /= qcd_n_entries
     numJets_qcd.Scale(1/normqcd)
-    #numJets_wjet /= wjet_n_entries
     numJets_wjet.Scale(1/normwjet)
     
-    print "GET INTEGRAL: %f" % numJets_wjet.integral()
-        
-    
-    #set_style('ATLAS')
-    
-    
+    #print "GET INTEGRAL: %f" % numJets_wjet.integral()
+
     #set line colors
     numJets_tt.SetLineColor('blue')
     numJets_qcd.SetLineColor('green')
     numJets_wjet.SetLineColor('red')
-    
-    numJets_tt.SetFillColor(None)
-    numJets_qcd.SetFillColor(None)
-    numJets_wjet.SetFillColor(None)
-    
+       
     
     #begin drawing stuff
-    canvas = Canvas()
+    
+    #canvas = Canvas()
     #stack = HistStack([numJets_wjet, numJets_tt, numJets_qcd], drawstyle='HIST')
     #stack.Draw()
     numJets_wjet.SetStats(0)
@@ -137,6 +160,13 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     
    
 def main():
+
+    # get files 
+    f_tt = rt.TFile("../../ttbar_data/ttbar_lepFilter_13TeV_313.root")
+    f_qcd = rt.TFile("../../ttbar_data/qcd_lepFilter_13TeV_10.root")
+    f_wjet = rt.TFile("../../ttbar_data/wjets_lepFilter_13TeV_3.root")
+    
+    # run functions you want here
     simple_delphes_parser(f_tt, f_qcd, f_wjet)
                  
 

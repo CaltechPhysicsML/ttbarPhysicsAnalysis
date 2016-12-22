@@ -18,7 +18,7 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     
     # DEFINE CONSTANTS HERE
     NBINS = 15
-    NLO = 1
+    NLO = 0
     NHI = 15
     
     # get trees from files
@@ -49,35 +49,52 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     numJets_qcd = Hist(NBINS,NLO,NHI, title = 'numJets_qcd', legendstyle = 'L')
     numJets_wjet = Hist(NBINS,NLO,NHI, title = 'numJets_wjet', legendstyle = 'L')
     
-    sumtt = 0
-    sumqcd = 0
-    sumwjet = 0
+    #sumtt = 0
+    #sumqcd = 0
+    #sumwjet = 0
     
     # to loop over all entries in the tree:
     for e in range(tt_n_entries):
         entry = t_tt.GetEntry(e)
         numJets_tt.Fill(leaf_tt.GetLen())
-        sumtt += leaf_tt.GetLen()
+        #sumtt += leaf_tt.GetLen()
         #numJets_tt.append(leaf_tt.GetLen())
     
     for e in range(qcd_n_entries):    
         entry = t_qcd.GetEntry(e)
         numJets_qcd.Fill(leaf_qcd.GetLen())
-        sumqcd += leaf_qcd.GetLen()
+        #sumqcd += leaf_qcd.GetLen()
         #numJets_qcd.append(leaf_qcd.GetLen())
     
     for e in range(wjet_n_entries):    
         t_wjet.GetEntry(e)
         numJets_wjet.Fill(leaf_wjet.GetLen())
-        sumwjet += leaf_wjet.GetLen()
+        #sumwjet += leaf_wjet.GetLen()
         #numJets_wjet.append(leaf_wjet.GetLen())
 
     #print "HERE: sum: %d nentries: %d" % (sumtt, tt_n_entries)
    
+   
+    #normtt = numJets_tt.Integral()
+    #print "FIRST INTEGRAL VAL: %f TTENTRIES: %f" % (normtt, (tt_n_entries - 1))
+    
+    #normqcd = numJets_qcd.Integral()
+    #normwjet = numJets_wjet.Integral()
+    
+    normtt = float(tt_n_entries - 1)
+    normqcd = float(qcd_n_entries - 1)
+    normwjet = float(wjet_n_entries - 1)
+    
     #normalize
-    numJets_tt /= sumtt
-    numJets_qcd /= sumqcd
-    numJets_wjet /= sumwjet
+    #numJets_tt /= tt_n_entries
+    numJets_tt.Scale(1/normtt)
+    #numJets_qcd /= qcd_n_entries
+    numJets_qcd.Scale(1/normqcd)
+    #numJets_wjet /= wjet_n_entries
+    numJets_wjet.Scale(1/normwjet)
+    
+    print "GET INTEGRAL: %f" % numJets_wjet.integral()
+        
     
     #set_style('ATLAS')
     
@@ -96,8 +113,8 @@ def simple_delphes_parser(filepath1, filepath2, filepath3):
     #make legend
     l1 = Legend([numJets_tt, numJets_qcd, numJets_wjet], textfont = 42, textsize = .03)
     l1.Draw()
-    canvas.Modified()
-    canvas.Update()
+    #canvas.Modified()
+    #canvas.Update()
     
     
     #numJets_tt.Draw()

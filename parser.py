@@ -18,6 +18,10 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     NLO = 0
     NHI = 15
     
+    PT_NBINS =  170
+    PT_NLO = 0
+    PT_NHI = 340
+    
     JETPT_THRESHOLD = 30 #GeV
     
     # get trees from files
@@ -46,6 +50,16 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     numJets_wjet = Hist(NBINS,NLO,NHI, title = 'numJets_wjet', legendstyle = 'L')
     
 
+    # interesting values to plot
+    max_jetpt_per_event_tt = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event tt', legendstyle = 'L')
+    min_jetpt_per_event_tt = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event tt', legendstyle = 'L')
+    
+    max_jetpt_per_event_qcd = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event qcd', legendstyle = 'L')
+    min_jetpt_per_event_qcd = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event qcd', legendstyle = 'L')
+    
+    max_jetpt_per_event_wjet = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event wjet', legendstyle = 'L')
+    min_jetpt_per_event_wjet = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event wjet', legendstyle = 'L')
+
    
     # FILLING THE TREE
 
@@ -58,18 +72,40 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
         # counter for number of values per entry > JETPT_THRESHOLD
         cntr = 0
         
+        # max & min vals, just make initial value
+        maxjetpt = leaf_tt.GetValue(0)
+        minjetpt = leaf_tt.GetValue(0)
+        
+        #print "MIN: %f MAX: %f" % (minjetpt, maxjetpt)
+        
         #iterate through each value in leaf of jet pts
         for i in range(leaf_tt.GetLen()):
             curr_val = leaf_tt.GetValue(i) # get the value
+            
+            #print "i: %d CURR VAL: %f" % (i, curr_val)
             
             # only care about values with > JETPT_THRESHOLD
             if (curr_val > JETPT_THRESHOLD):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
+                
+            if (curr_val > maxjetpt):
+                maxjetpt = curr_val
+            
+            if (curr_val < minjetpt):
+                minjetpt = curr_val
+        
+        
+       #if (minjetpt < 10.0):       
+            #print "MIN: %f MAX: %f" % (minjetpt, maxjetpt)
         
         # get number of jets with jetpt > JETPT_THRESHOLD        
         numJets_tt.Fill(cntr) 
-        #print "LENGTH: %f: " % lentt
+        
+        max_jetpt_per_event_tt.Fill(maxjetpt)
+        min_jetpt_per_event_tt.Fill(minjetpt)
+
+
 
     # QCD
     
@@ -79,6 +115,10 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
         # counter for number of values per entry > JETPT_THRESHOLD
         cntr = 0
         
+        # max & min vals, just make initial value
+        maxjetpt = leaf_qcd.GetValue(0)
+        minjetpt = leaf_qcd.GetValue(0)
+        
         #iterate through each value in leaf of jet pts
         for i in range(leaf_qcd.GetLen()):
             curr_val = leaf_qcd.GetValue(i) # get the value
@@ -87,9 +127,18 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
             if (curr_val > JETPT_THRESHOLD):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
-        
+                
+            if (curr_val > maxjetpt):
+                maxjetpt = curr_val
+            
+            if (curr_val < minjetpt):
+                minjetpt = curr_val
+            
         # get number of jets with jetpt > JETPT_THRESHOLD 
         numJets_qcd.Fill(cntr)
+        
+        max_jetpt_per_event_qcd.Fill(maxjetpt)
+        min_jetpt_per_event_qcd.Fill(minjetpt)
 
     # WJET
     
@@ -99,6 +148,12 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
         # counter for number of values per entry > JETPT_THRESHOLD
         cntr = 0
         
+        # max & min vals, just make initial value
+        maxjetpt = leaf_wjet.GetValue(0)
+        minjetpt = leaf_wjet.GetValue(0)
+        
+        #print maxjetpt
+        
         #iterate through each value in leaf of jet pts
         for i in range(leaf_wjet.GetLen()):
             curr_val = leaf_wjet.GetValue(i) # get the value
@@ -107,9 +162,26 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
             if (curr_val > JETPT_THRESHOLD):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
+                
+            if ((curr_val > maxjetpt) & (curr_val > 0)):
+                maxjetpt = curr_val
+            
+            if ((curr_val < minjetpt) & (curr_val > 0)):
+                minjetpt = curr_val
+        
+        #if (maxjetpt < 5):
+            #print maxjetpt
+            
+        
         
         # get number of jets with jetpt > JETPT_THRESHOLD 
         numJets_wjet.Fill(cntr)
+        
+        if (maxjetpt > 0):
+            max_jetpt_per_event_wjet.Fill(maxjetpt)
+        
+        if (minjetpt > 0):
+            min_jetpt_per_event_wjet.Fill(minjetpt)
 
     
     # get float version of num entries to normalize below; subtract 1 to get 
@@ -132,10 +204,7 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
        
     
     #begin drawing stuff
-    
-    #canvas = Canvas()
-    #stack = HistStack([numJets_wjet, numJets_tt, numJets_qcd], drawstyle='HIST')
-    #stack.Draw()
+    c1 = Canvas()
     numJets_wjet.SetStats(0)
     numJets_wjet.Draw('HIST')
     numJets_tt.Draw('HIST SAME')
@@ -145,16 +214,93 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     #make legend
     l1 = Legend([numJets_tt, numJets_qcd, numJets_wjet], textfont = 42, textsize = .03)
     l1.Draw()
-    #canvas.Modified()
-    #canvas.Update()
+    
+    #save as pdf
+    c1.SaveAs("numjets.pdf");
+    
+    ################ MIN MAX STUFF
+    
+    # TT
+    
+    # normalize
+    max_jetpt_per_event_tt.Scale(1/normtt)
+    min_jetpt_per_event_tt.Scale(1/normtt)
+    
+    #print "GET INTEGRAL: %f" % numJets_wjet.integral()
+
+    #set line colors
+    max_jetpt_per_event_tt.SetLineColor('blue')
+    min_jetpt_per_event_tt.SetLineColor('green')  
+    
+    #begin drawing stuff
+    c2 = Canvas()
+    min_jetpt_per_event_tt.SetStats(0)
+    min_jetpt_per_event_tt.Draw('HIST')
+    max_jetpt_per_event_tt.Draw('HIST SAME')
+    
+    #make legend
+    l2 = Legend([min_jetpt_per_event_tt, max_jetpt_per_event_tt], textfont = 42, textsize = .03)
+    l2.Draw()
+    
+    #save as pdf
+    c2.SaveAs("maxminpt_tt.pdf")
+    
+    # QCD
+    
+    # normalize
+    max_jetpt_per_event_qcd.Scale(1/normqcd)
+    min_jetpt_per_event_qcd.Scale(1/normqcd)
+    
+    #print "GET INTEGRAL: %f" % numJets_wjet.integral()
+
+    #set line colors
+    max_jetpt_per_event_qcd.SetLineColor('blue')
+    min_jetpt_per_event_qcd.SetLineColor('green')  
+    
+    #begin drawing stuff
+    c3 = Canvas()
+    
+    min_jetpt_per_event_qcd.SetStats(0)
+    min_jetpt_per_event_qcd.Draw('HIST')
+    max_jetpt_per_event_qcd.Draw('HIST SAME')
+    
+    #make legend
+    l3 = Legend([min_jetpt_per_event_qcd, max_jetpt_per_event_qcd], textfont = 42, textsize = .03)
+    l3.Draw()
+
+    #save as pdf
+    c3.SaveAs("maxminpt_qcd.pdf")
+
+
+
+    #WJET
+    
+    # normalize
+    max_jetpt_per_event_wjet.Scale(1/normwjet)
+    min_jetpt_per_event_wjet.Scale(1/normwjet)
+    
+    #print "GET INTEGRAL: %f" % numJets_wjet.integral()
+
+    #set line colors
+    max_jetpt_per_event_wjet.SetLineColor('blue')
+    min_jetpt_per_event_wjet.SetLineColor('green')  
+    
+    #begin drawing stuff
+    c4 = Canvas()
+    
+    min_jetpt_per_event_wjet.SetStats(0)
+    min_jetpt_per_event_wjet.Draw('HIST')
+    max_jetpt_per_event_wjet.Draw('HIST SAME')
+    
+    #make legend
+    l4 = Legend([min_jetpt_per_event_wjet, max_jetpt_per_event_wjet], textfont = 42, textsize = .03)
+    l4.Draw()
+    
+    #save as pdf
+    c4.SaveAs("maxminpt_wjet.pdf")
     
     
-    #numJets_tt.Draw()
-    #numJets_qcd.Draw()
-    #numJets_wjet.Draw() 
-    
-     
-    #plt.show()
+    #make the plots wait on screen
     wait(True)
     
     

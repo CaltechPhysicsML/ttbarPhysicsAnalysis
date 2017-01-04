@@ -22,7 +22,10 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     PT_NLO = 0
     PT_NHI = 340
     
-    JETPT_THRESHOLD = 30 #GeV
+    JETPT_THRESHOLD_LO = 0 #GeV
+    JETPT_THRESHOLD_HI = 10000
+    
+    INVALID = -1.0
     
     # get trees from files
     t_tt = f_tt.Get("Delphes")
@@ -73,8 +76,8 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
         cntr = 0
         
         # max & min vals, just make initial value
-        maxjetpt = leaf_tt.GetValue(0)
-        minjetpt = leaf_tt.GetValue(0)
+        maxjetpt = INVALID
+        minjetpt = INVALID
         
         #print "MIN: %f MAX: %f" % (minjetpt, maxjetpt)
         
@@ -85,14 +88,14 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
             #print "i: %d CURR VAL: %f" % (i, curr_val)
             
             # only care about values with > JETPT_THRESHOLD
-            if (curr_val > JETPT_THRESHOLD):
+            if ((curr_val > JETPT_THRESHOLD_LO) & (curr_val < JETPT_THRESHOLD_HI)):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
                 
-            if (curr_val > maxjetpt):
+            if ((curr_val > maxjetpt) | (maxjetpt == INVALID)):
                 maxjetpt = curr_val
             
-            if (curr_val < minjetpt):
+            if ((curr_val < minjetpt) | (minjetpt == INVALID)):
                 minjetpt = curr_val
         
         
@@ -116,23 +119,24 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
         cntr = 0
         
         # max & min vals, just make initial value
-        maxjetpt = leaf_qcd.GetValue(0)
-        minjetpt = leaf_qcd.GetValue(0)
+        maxjetpt = INVALID
+        minjetpt = INVALID
         
         #iterate through each value in leaf of jet pts
         for i in range(leaf_qcd.GetLen()):
             curr_val = leaf_qcd.GetValue(i) # get the value
             
             # only care about values with > JETPT_THRESHOLD
-            if (curr_val > JETPT_THRESHOLD):
+            if ((curr_val > JETPT_THRESHOLD_LO) & (curr_val < JETPT_THRESHOLD_HI)):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
                 
-            if (curr_val > maxjetpt):
+            if ((curr_val > maxjetpt) | (maxjetpt == INVALID)):
                 maxjetpt = curr_val
             
-            if (curr_val < minjetpt):
+            if ((curr_val < minjetpt) | (minjetpt == INVALID)):
                 minjetpt = curr_val
+         
             
         # get number of jets with jetpt > JETPT_THRESHOLD 
         numJets_qcd.Fill(cntr)
@@ -149,39 +153,40 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
         cntr = 0
         
         # max & min vals, just make initial value
-        maxjetpt = leaf_wjet.GetValue(0)
-        minjetpt = leaf_wjet.GetValue(0)
+        maxjetpt = INVALID #leaf_wjet.GetValue(0)
+        minjetpt = INVALID #leaf_wjet.GetValue(0)
         
-        #print maxjetpt
+        
         
         #iterate through each value in leaf of jet pts
         for i in range(leaf_wjet.GetLen()):
             curr_val = leaf_wjet.GetValue(i) # get the value
             
             # only care about values with > JETPT_THRESHOLD
-            if (curr_val > JETPT_THRESHOLD):
+            if ((curr_val > JETPT_THRESHOLD_LO) & (curr_val < JETPT_THRESHOLD_HI)):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
                 
-            if ((curr_val > maxjetpt) & (curr_val > 0)):
+            if ((curr_val > maxjetpt)  | (maxjetpt == INVALID)):
                 maxjetpt = curr_val
             
-            if ((curr_val < minjetpt) & (curr_val > 0)):
+            if ((curr_val < minjetpt) | (minjetpt == INVALID)):
                 minjetpt = curr_val
-        
-        #if (maxjetpt < 5):
-            #print maxjetpt
+                
+                
+            #if (curr_val < 10):
+                #print maxjetpt
             
         
         
         # get number of jets with jetpt > JETPT_THRESHOLD 
         numJets_wjet.Fill(cntr)
         
-        if (maxjetpt > 0):
-            max_jetpt_per_event_wjet.Fill(maxjetpt)
+        #if (maxjetpt > 0):
+        max_jetpt_per_event_wjet.Fill(maxjetpt)
         
-        if (minjetpt > 0):
-            min_jetpt_per_event_wjet.Fill(minjetpt)
+        #if (minjetpt > 0):
+        min_jetpt_per_event_wjet.Fill(minjetpt)
 
     
     # get float version of num entries to normalize below; subtract 1 to get 
@@ -217,6 +222,10 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     
     #save as pdf
     c1.SaveAs("numjets.pdf");
+    
+    ctest = Canvas()
+    numJets_wjet.Draw('HIST')
+    ctest.SaveAs("wjetsnumjets_5.pdf")
     
     ################ MIN MAX STUFF
     

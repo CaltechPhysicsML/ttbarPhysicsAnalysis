@@ -225,7 +225,7 @@ def simple_delphes_parser(f_tt, f_qcd, f_wjet):
     
     ctest = Canvas()
     numJets_wjet.Draw('HIST')
-    ctest.SaveAs("wjetsnumjets_5.pdf")
+    ctest.SaveAs("wjetsnumjets.pdf")
     
     ################ MIN MAX STUFF
     

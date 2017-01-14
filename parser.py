@@ -253,9 +253,9 @@ def fill_JetBTag_tree(nentries, tree, leaf, numLoose, numMedium, numTight):
             
             if (curr_val & (1 << BIT_TIGHT)):
                 cntr_tight += 1
-            elif (curr_val & (1 << BIT_MEDIUM)):
+            if (curr_val & (1 << BIT_MEDIUM)):
                 cntr_medium += 1
-            elif (curr_val & (1 << BIT_LOOSE)):
+            if (curr_val & (1 << BIT_LOOSE)):
                 cntr_loose += 1
         
        
@@ -301,9 +301,9 @@ def extract_JetBTag(f_tt, f_qcd, f_wjet):
     wjet_n_entries = t_wjet.GetEntries()
     
     # define leaves
-    var_tt = "Jet.PT"
-    var_qcd = "Jet.PT"
-    var_wjet = "Jet.PT"
+    var_tt = "Jet.BTag"
+    var_qcd = "Jet.BTag"
+    var_wjet = "Jet.BTag"
     
     leaf_tt = t_tt.GetLeaf(var_tt)
     leaf_qcd = t_qcd.GetLeaf(var_qcd)
@@ -345,14 +345,14 @@ def extract_JetBTag(f_tt, f_qcd, f_wjet):
     
     #begin drawing stuff
     c1 = Canvas()
-    loose_tt.SetStats(0)
-    loose_tt.Draw('HIST')
+    tight_tt.SetStats(0)
+    tight_tt.Draw('HIST')
     medium_tt.Draw('HIST SAME')
-    tight_tt.Draw('HIST SAME')
+    loose_tt.Draw('HIST SAME')
     
     
     #make legend
-    l1 = Legend([loose_tt, medium_tt, tight_tt], textfont = 42, textsize = .03)
+    l1 = Legend([tight_tt, medium_tt, loose_tt], textfont = 42, textsize = .03)
     l1.Draw()
     
     #save as pdf
@@ -361,14 +361,14 @@ def extract_JetBTag(f_tt, f_qcd, f_wjet):
     
     
     c2 = Canvas()
-    loose_qcd.SetStats(0)
-    loose_qcd.Draw('HIST')
+    tight_qcd.SetStats(0)
+    tight_qcd.Draw('HIST')
     medium_qcd.Draw('HIST SAME')
-    tight_qcd.Draw('HIST SAME')
+    loose_qcd.Draw('HIST SAME')
     
     
     #make legend
-    l2 = Legend([loose_qcd, medium_qcd, tight_qcd], textfont = 42, textsize = .03)
+    l2 = Legend([tight_qcd, medium_qcd, loose_qcd], textfont = 42, textsize = .03)
     l2.Draw()
     
     #save as pdf
@@ -378,14 +378,14 @@ def extract_JetBTag(f_tt, f_qcd, f_wjet):
     
     
     c3 = Canvas()
-    loose_wjet.SetStats(0)
-    loose_wjet.Draw('HIST')
+    tight_wjet.SetStats(0)
+    tight_wjet.Draw('HIST')
     medium_wjet.Draw('HIST SAME')
-    tight_wjet.Draw('HIST SAME')
+    loose_wjet.Draw('HIST SAME')
     
     
     #make legend
-    l3 = Legend([loose_wjet, medium_wjet, tight_wjet], textfont = 42, textsize = .03)
+    l3 = Legend([tight_wjet, medium_wjet, loose_wjet], textfont = 42, textsize = .03)
     l3.Draw()
     
     #save as pdf

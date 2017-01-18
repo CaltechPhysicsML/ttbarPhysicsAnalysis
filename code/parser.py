@@ -14,10 +14,11 @@ import rootpy.plotting.root2matplotlib as rplt
 
 from parser_constants import * # get constants used in this file
 
-from JetPT_analysis import *
-from JetBTag_analysis import *
-from ElectronPT_analysis import *
-from MuonPT_analysis import *
+# extract necessary functions from helper/analysis code
+from JetPT_analysis import extract_JetPT
+from JetBTag_analysis import extract_JetBTag
+from ElectronPT_analysis import extract_Electron
+from MuonPT_analysis import extract_Muon
 
    
 def main():

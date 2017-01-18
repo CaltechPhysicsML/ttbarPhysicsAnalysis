@@ -49,7 +49,7 @@ def fill_Muon_tree(nentries, tree, leaf, numMuons, minJet, maxJet):
             
             
             # only care about values with > JETPT_THRESHOLD
-            if ((curr_val > ELECTRON_THRESHOLD_LO) & (curr_val < ELECTRON_THRESHOLD_HI)):
+            if ((curr_val > MUON_THRESHOLD_LO) & (curr_val < MUON_THRESHOLD_HI)):
                 #print "JET PT VAL: %f" % curr_val # to see if in order
                 cntr += 1
                 

@@ -31,7 +31,7 @@ create histograms. Fill necessary trees, and create plots.
 
 '''
    
-def do_analysis(f_tt, f_qcd, f_wjet, var_to_extract):
+def do_analysis(f_tt, f_qcd, f_wjet, analyze_this):
     
     # get trees from files
     t_tt = f_tt.Get("Delphes")
@@ -91,9 +91,33 @@ def main():
     f_qcd = rt.TFile("../../../ttbar_data/qcd_lepFilter_13TeV_10.root")
     f_wjet = rt.TFile("../../../ttbar_data/wjets_lepFilter_13TeV_3.root")
     
+    # array of stuff needed to be analyzed
+    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MissingET.MET']
+    
+    # bits to be set if want analyzed:
+    # Jet.PT = 0 (rightmost binary bit)
+    # Jet.BTag = 1
+    # Electron.PT = 2
+    # MuonTight.PT = 3
+    # MissingET.MET = 4 (leftmost binary bit)
+    
+    leaf_bits = 0b11111
+    
+    # create dictionary associating set bits to possible leafs
+    analyze_this = {n: want_leaves[n] for n in leaf_bits}
+    
+    
     # run functions you want here
-    do_analysis(f_tt, f_qcd, f_wjet)
+    do_analysis(f_tt, f_qcd, f_wjet, analyze_this)
                  
 
 if __name__ == "__main__":
     main();
+    
+    
+    
+    
+    
+    
+    
+    

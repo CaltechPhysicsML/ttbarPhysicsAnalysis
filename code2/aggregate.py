@@ -10,8 +10,10 @@ from rootpy.interactive import wait
 from rootpy.plotting.utils import draw
 import rootpy.plotting.root2matplotlib as rplt
 
-# self-written code imports
 
+
+# self-written code imports
+'''
 from parser_constants import * # get constants used in this file
 
 # extract necessary functions from helper/analysis code
@@ -20,7 +22,7 @@ from JetBTag_analysis import extract_JetBTag
 from ElectronPT_analysis import extract_Electron
 from MuonPT_analysis import extract_Muon
 from MET_analysis import extract_MET
-
+'''
 
 '''
 
@@ -101,14 +103,47 @@ def main():
     # MuonTight.PT = 3
     # MissingET.MET = 4 (leftmost binary bit)
     
-    leaf_bits = 0b11111
     
-    # create dictionary associating set bits to possible leafs
-    analyze_this = {n: want_leaves[n] for n in leaf_bits}
     
+    # print out leaves used in analysis for user
+    print "\nDefault analysis includes: \n" + "\n".join(want_leaves)
+    
+    while True:
+        
+        # if want all analyses done. Or statement ensures there is a default value
+        if (int(raw_input("\nPress 'Enter' if default analysis okay or '0' or " + 
+        "skip: ") or '1')):
+        
+            # default to do all analysis (set everything)
+            leaf_bits = [1] * len(want_leaves) 
+            
+        # only want to do specific analyses    
+        else:
+            print ("\nPress 'Enter' if each analysis is ok, or '0' to skip")
+            print ""
+            
+            leaf_bits = []
+            
+            # ask if want to analyze each leaf in want_leaves list
+            for i in want_leaves:
+                leaf_bits.append(int(raw_input("{} analysis: ".format(i)) or '1'))
+                
+            print ""
+            
+        
+        # create dictionary associating set bits to possible leafs
+        analyze_this = dict(zip(want_leaves, leaf_bits))
+        print "\nFinal dictionary: ", (analyze_this)
+        
+        # make sure user likes the analysis choices, otherwise reloop through
+        # all options again
+        if(int(raw_input("\nIs this dictionary okay? " +
+        "Press 'Enter' if yes, or '0' if no: ") or '1')):
+            break
+        
     
     # run functions you want here
-    do_analysis(f_tt, f_qcd, f_wjet, analyze_this)
+    #do_analysis(f_tt, f_qcd, f_wjet, analyze_this)
                  
 
 if __name__ == "__main__":

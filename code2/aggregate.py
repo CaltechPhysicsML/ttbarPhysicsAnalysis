@@ -13,16 +13,12 @@ import rootpy.plotting.root2matplotlib as rplt
 
 
 # self-written code imports
-'''
+
 from parser_constants import * # get constants used in this file
 
 # extract necessary functions from helper/analysis code
-from JetPT_analysis import extract_JetPT
-from JetBTag_analysis import extract_JetBTag
-from ElectronPT_analysis import extract_Electron
-from MuonPT_analysis import extract_Muon
-from MET_analysis import extract_MET
-'''
+from fillhists import *
+
 
 '''
 
@@ -33,54 +29,208 @@ create histograms. Fill necessary trees, and create plots.
 
 '''
    
-def do_analysis(f_tt, f_qcd, f_wjet, analyze_this):
+def do_analysis(f, eventtype, analyze_this):
     
     # get trees from files
-    t_tt = f_tt.Get("Delphes")
-    t_qcd = f_qcd.Get("Delphes")
-    t_wjet = f_wjet.Get("Delphes")
+    t = f.Get("Delphes")
     
     # get number of entries
-    tt_n_entries = t_tt.GetEntries()
-    qcd_n_entries = t_qcd.GetEntries()
-    wjet_n_entries = t_wjet.GetEntries()
+    nentries = t.GetEntries()
     
-    # define leaves
-    var_tt = "Jet.PT"
-    var_qcd = "Jet.PT"
-    var_wjet = "Jet.PT"
+    # initialize everything here before filling histograms
     
-    leaf_tt = t_tt.GetLeaf(var_tt)
-    leaf_qcd = t_qcd.GetLeaf(var_qcd)
-    leaf_wjet = t_wjet.GetLeaf(var_wjet)
-   
+    if (analyze_this['Jet.PT']):
+        print "\nInitializing Jet.PT...\n"
+        
+        # define leaves
+        var = "Jet.PT"
+        
+        leaf = t.GetLeaf(var)
+        
+        # create the histograms
+        numJets = Hist(NBINS,NLO,NHI, title = 'numJets ' + eventtype, legendstyle = 'L')
+
+        # interesting values to plot
+        max_jetpt_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event ' + eventtype, legendstyle = 'L')
+        min_jetpt_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event ' + eventtype, legendstyle = 'L')
+
+    else:
+        print "Skipped Jet.PT"
+        
+        
+    if (analyze_this['Jet.BTag']):
+        print "Initializing Jet.BTag...\n"
+        
+        # define leaves
+        var = "Jet.BTag"
+        
+        leaf = t.GetLeaf(var)
+        
+        # create the histograms
+        loose = Hist(NBINS,NLO,NHI, title = 'loose ' + eventtype, legendstyle = 'L')
+        medium = Hist(NBINS,NLO,NHI, title = 'medium ' + eventtype, legendstyle = 'L')
+        tight = Hist(NBINS,NLO,NHI, title = 'tight ' + eventtype, legendstyle = 'L')
+
+    else:
+        print "Skipped Jet.BTag"
+        
+        
+    if (analyze_this['Electron.PT']):
+        print "Initializing Electron.PT...\n"
+        
+        # define leaves
+        var = "Electron.PT"
+        
+        leaf = t.GetLeaf(var)
+        
+        # create the histograms
+        numElectrons = Hist(NBINS,NLO,NHI, title = 'numElectrons ' + eventtype, legendstyle = 'L')
+
+        # interesting values to plot
+        max_ept_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max ElectronPT/Event ' + eventtype, legendstyle = 'L')
+        min_ept_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min ElectronPT/Event ' + eventtype, legendstyle = 'L')
+        
+        # initialize any variable-specific constants here:
+        
+        # counter for no electrons
+        noeleaf = 0
+
+    else:
+        print "Skipped Electron.PT" 
+        
+        
+        
+    if (analyze_this['MuonTight.PT']):
+        print "Initializing MuonTight.PT...\n"
+        
+        # define leaves
+        var = "MuonTight.PT"
+        
+        leaf = t.GetLeaf(var)
+        
+        # create the histograms
+        numMuons = Hist(NBINS,NLO,NHI, title = 'numMuons ' + eventtype, legendstyle = 'L')
+
+        # interesting values to plot
+        max_upt_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max MuonPT/Event ' + eventtype, legendstyle = 'L')
+        min_upt_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min MuonPT/Event ' + eventtype, legendstyle = 'L')
+
+        # initialize any variable-specific constants here:
+        
+        # counter for no electrons
+        nouleaf = 0
+
+    else:
+        print "Skipped MuonTight.PT"     
+        
+        
+    if (analyze_this['MissingET.MET']):
+        print "Initializing MissingET.MET...\n"
+        
+        # define leaves
+        var = "MissingET.MET"
+        
+        leaf = t.GetLeaf(var)
+        
+        # create the histograms
+        MET = Hist(MET_NBINS, MET_NLO, MET_NHI, title = 'MET ' + eventtype, legendstyle = 'L')
+        
+    else:
+        print "MissingET.MET"    
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+    
+    # Now fill histograms
+    
+    print "\nFilling histograms...\n"
+    
+    # get float version of num entries to normalize below; subtract 1 to get 
+    # actual integral value of hist
+    norm = float(nentries - 1)
+    
+    
+    for e in range(nentries):
+        
+        entry = t.GetEntry(e)
+        
+        if (analyze_this['Jet.PT']):
+            fill_JetPT_hist(t, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event)
+
+        
+        if (analyze_this['Jet.BTag']):
+            fill_JetBTag_hist(t, leaf, entry, loose, medium, tight)    
+            
+            
+        if (analyze_this['Electron.PT']):
+            
+            # returns noeleaf value in function to output later, since noeleaf
+            # is an immutable object
+            noeleaf = fill_Electron_hist(t, leaf, noeleaf, entry, numElectrons, min_ept_per_event, max_ept_per_event)
+    
+        if (analyze_this['MuonTight.PT']):
+            
+            # returns noeleaf value in function to output later, since noeleaf
+            # is an immutable object
+            nouleaf = fill_Muon_hist(t, leaf, nouleaf, entry, numMuons, min_upt_per_event, max_upt_per_event)
+    
+        if (analyze_this['MissingET.MET']):
+            fill_MET_hist(t, leaf, entry, MET)   
+         
     
     
     
     
-    # create the histograms
-    numJets_tt = Hist(NBINS,NLO,NHI, title = 'numJets_tt', legendstyle = 'L')
-    numJets_qcd = Hist(NBINS,NLO,NHI, title = 'numJets_qcd', legendstyle = 'L')
-    numJets_wjet = Hist(NBINS,NLO,NHI, title = 'numJets_wjet', legendstyle = 'L')
     
 
-    # interesting values to plot
-    max_jetpt_per_event_tt = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event tt', legendstyle = 'L')
-    min_jetpt_per_event_tt = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event tt', legendstyle = 'L')
-    
-    max_jetpt_per_event_qcd = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event qcd', legendstyle = 'L')
-    min_jetpt_per_event_qcd = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event qcd', legendstyle = 'L')
-    
-    max_jetpt_per_event_wjet = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max JetPT/Event wjet', legendstyle = 'L')
-    min_jetpt_per_event_wjet = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min JetPT/Event wjet', legendstyle = 'L')
+    if (analyze_this['Jet.PT']):
 
+        # normalize
+        numJets.Scale(1/norm)
+        max_jetpt_per_event.Scale(1/norm)
+        min_jetpt_per_event.Scale(1/norm)
+    
+    if (analyze_this['Jet.BTag']):
    
-    # FILLING THE TREE
-    fill_JetPT_tree(tt_n_entries, t_tt, leaf_tt, numJets_tt, min_jetpt_per_event_tt, max_jetpt_per_event_tt)
-    fill_JetPT_tree(qcd_n_entries, t_qcd, leaf_qcd, numJets_qcd, min_jetpt_per_event_qcd, max_jetpt_per_event_qcd)
-    fill_JetPT_tree(wjet_n_entries, t_wjet, leaf_wjet, numJets_wjet, min_jetpt_per_event_wjet, max_jetpt_per_event_wjet)
-    
-    
+        # normalize
+        tight.Scale(1/norm)
+        medium.Scale(1/norm)
+        loose.Scale(1/norm) 
+        
+    if (analyze_this['Electron.PT']):        
+                
+        # normalize
+        numElectrons.Scale(1/norm)
+        max_ept_per_event.Scale(1/norm)
+        min_ept_per_event.Scale(1/norm)
+        
+        print "\nentries: " + str(nentries) + " noeleaf number: " + str(noeleaf) 
+        
+    if (analyze_this['MuonTight.PT']):        
+                
+        # normalize
+        numMuons.Scale(1/norm)
+        max_upt_per_event.Scale(1/norm)
+        min_upt_per_event.Scale(1/norm)
+        
+        print "\nentries: " + str(nentries) + " nouleaf number: " + str(nouleaf) 
+
+    if (analyze_this['MissingET.MET']):
+   
+        # normalize
+        MET.Scale(1/norm)
+
+    print ""
+    print "\nDone!\n"
+
 
 
 
@@ -141,9 +291,10 @@ def main():
         "Press 'Enter' if yes, or '0' if no: ") or '1')):
             break
         
+    print ""
     
     # run functions you want here
-    #do_analysis(f_tt, f_qcd, f_wjet, analyze_this)
+    do_analysis(f_wjet, 'wjet', analyze_this)
                  
 
 if __name__ == "__main__":

@@ -162,28 +162,28 @@ def do_analysis(f, eventtype, analyze_this):
         
         entry = t.GetEntry(e)
         
+        
         if (analyze_this['Jet.PT']):
-            fill_JetPT_hist(t, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event)
-
+            fill_JetPT_hist(t, t.GetLeaf("Jet.PT"), entry, numJets, min_jetpt_per_event, max_jetpt_per_event)
         
         if (analyze_this['Jet.BTag']):
-            fill_JetBTag_hist(t, leaf, entry, loose, medium, tight)    
+            fill_JetBTag_hist(t, t.GetLeaf("Jet.BTag"), entry, loose, medium, tight)    
             
             
         if (analyze_this['Electron.PT']):
             
             # returns noeleaf value in function to output later, since noeleaf
             # is an immutable object
-            noeleaf = fill_Electron_hist(t, leaf, noeleaf, entry, numElectrons, min_ept_per_event, max_ept_per_event)
+            noeleaf = fill_Electron_hist(t, t.GetLeaf("Electron.PT"), noeleaf, entry, numElectrons, min_ept_per_event, max_ept_per_event)
     
         if (analyze_this['MuonTight.PT']):
             
             # returns noeleaf value in function to output later, since noeleaf
             # is an immutable object
-            nouleaf = fill_Muon_hist(t, leaf, nouleaf, entry, numMuons, min_upt_per_event, max_upt_per_event)
+            nouleaf = fill_Muon_hist(t, t.GetLeaf("MuonTight.PT"), nouleaf, entry, numMuons, min_upt_per_event, max_upt_per_event)
     
         if (analyze_this['MissingET.MET']):
-            fill_MET_hist(t, leaf, entry, MET)   
+            fill_MET_hist(t, t.GetLeaf("MissingET.MET"), entry, MET)   
          
     
     
@@ -233,6 +233,33 @@ def do_analysis(f, eventtype, analyze_this):
 
 
 
+
+
+
+
+
+    # write to TFiles
+    newf = rt.TFile(eventtype + "hists.root", "recreate")
+    
+    numJets.Write("numJets")
+    max_jetpt_per_event.Write("max_jetpt_per_event")
+    min_jetpt_per_event.Write("min_jetpt_per_event")
+    
+    loose.Write("loose")
+    medium.Write("medium")
+    tight.Write("tight")   
+    
+    numElectrons.Write("numElectrons")
+    max_ept_per_event.Write("max_ept_per_event")
+    min_ept_per_event.Write("min_ept_per_event")
+    
+    numMuons.Write("numMuons")
+    max_upt_per_event.Write("max_upt_per_event")
+    min_upt_per_event.Write("min_upt_per_event")
+    
+    MET.Write("MET")
+    
+    newf.Close()
 
 
    

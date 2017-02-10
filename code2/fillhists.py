@@ -60,7 +60,6 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet):
     
     # get number of jets with jetpt > JETPT_THRESHOLD        
     numJets.Fill(cntr) 
-    
     maxJet.Fill(maxjetpt)
     minJet.Fill(minjetpt) 
         

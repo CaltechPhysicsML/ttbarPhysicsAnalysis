@@ -10,15 +10,12 @@ class leptons:
     #again, this can only be used once per entry in nentries! Only initialize after
     # all required info has been filled into a dictionary or somethang
     
-    def __init__(self, e_pt, e_eta, e_phi, u_pt, u_eta, u_phi, met, met_eta, met_phi):
+    def __init__(self, e_pt, e_phi, u_pt, u_phi, met, met_phi):
         self.e_pt = e_pt
-        self.e_eta = e_eta
         self.e_phi = e_phi
         self.u_pt = u_pt
-        self.u_eta = u_eta
         self.u_phi = u_phi
         self.met = self.met
-        self.met_eta = self.met_eta
         self.met_phi = self.met_phi
         
     

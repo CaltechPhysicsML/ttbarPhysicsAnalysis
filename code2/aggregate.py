@@ -2,6 +2,7 @@
 
 import ROOT as rt
 import numpy as np
+import math
 import matplotlib.pyplot as plt
 import seaborn
 from rootpy.plotting import Hist, HistStack, Graph, Canvas, Legend
@@ -18,6 +19,7 @@ from parser_constants import * # get constants used in this file
 
 # extract necessary functions from helper/analysis code
 from fillhists import *
+from calculate import *
 
 
 '''
@@ -42,11 +44,6 @@ def do_analysis(f, eventtype, analyze_this):
     if (analyze_this['Jet.PT']):
         print "\nInitializing Jet.PT...\n"
         
-        # define leaves
-        var = "Jet.PT"
-        
-        leaf = t.GetLeaf(var)
-        
         # create the histograms
         numJets = Hist(NBINS,NLO,NHI, title = 'numJets ' + eventtype, legendstyle = 'L')
 
@@ -60,12 +57,7 @@ def do_analysis(f, eventtype, analyze_this):
         
     if (analyze_this['Jet.BTag']):
         print "Initializing Jet.BTag...\n"
-        
-        # define leaves
-        var = "Jet.BTag"
-        
-        leaf = t.GetLeaf(var)
-        
+               
         # create the histograms
         loose = Hist(NBINS,NLO,NHI, title = 'loose ' + eventtype, legendstyle = 'L')
         medium = Hist(NBINS,NLO,NHI, title = 'medium ' + eventtype, legendstyle = 'L')
@@ -77,12 +69,7 @@ def do_analysis(f, eventtype, analyze_this):
         
     if (analyze_this['Electron.PT']):
         print "Initializing Electron.PT...\n"
-        
-        # define leaves
-        var = "Electron.PT"
-        
-        leaf = t.GetLeaf(var)
-        
+                
         # create the histograms
         numElectrons = Hist(NBINS,NLO,NHI, title = 'numElectrons ' + eventtype, legendstyle = 'L')
 
@@ -98,15 +85,30 @@ def do_analysis(f, eventtype, analyze_this):
     else:
         print "Skipped Electron.PT" 
         
+    
+    if (analyze_this['Electron.Phi']):
+        print "Initializing Electron.Phi...\n"
+                
+        # create the histograms
+        electronPhi = Hist(NBINS,NLO,NHI, title = 'electronPhi ' + eventtype, legendstyle = 'L')
+
+        # interesting values to plot
+        max_ept_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max ElectronPT/Event ' + eventtype, legendstyle = 'L')
+        min_ept_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min ElectronPT/Event ' + eventtype, legendstyle = 'L')
+        
+        # initialize any variable-specific constants here:
+        
+        # counter for no electrons
+        noeleaf = 0
+
+    else:
+        print "Skipped Electron.PT" 
+    
         
         
     if (analyze_this['MuonTight.PT']):
         print "Initializing MuonTight.PT...\n"
         
-        # define leaves
-        var = "MuonTight.PT"
-        
-        leaf = t.GetLeaf(var)
         
         # create the histograms
         numMuons = Hist(NBINS,NLO,NHI, title = 'numMuons ' + eventtype, legendstyle = 'L')
@@ -126,11 +128,6 @@ def do_analysis(f, eventtype, analyze_this):
         
     if (analyze_this['MissingET.MET']):
         print "Initializing MissingET.MET...\n"
-        
-        # define leaves
-        var = "MissingET.MET"
-        
-        leaf = t.GetLeaf(var)
         
         # create the histograms
         MET = Hist(MET_NBINS, MET_NLO, MET_NHI, title = 'MET ' + eventtype, legendstyle = 'L')
@@ -162,28 +159,64 @@ def do_analysis(f, eventtype, analyze_this):
         
         entry = t.GetEntry(e)
         
+        # to check whether each entry is electron or muon
+        is_electron = False
+        is_muon = False
         
         if (analyze_this['Jet.PT']):
-            fill_JetPT_hist(t, t.GetLeaf("Jet.PT"), entry, numJets, min_jetpt_per_event, max_jetpt_per_event)
+        
+            # define leaves       
+            var = 'Jet.PT'
+            
+            leaf = t.GetLeaf(var)
+            
+            fill_JetPT_hist(t, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event)
         
         if (analyze_this['Jet.BTag']):
-            fill_JetBTag_hist(t, t.GetLeaf("Jet.BTag"), entry, loose, medium, tight)    
+        
+            # define leaves
+            var = "Jet.BTag"
+            
+            leaf = t.GetLeaf(var)
+        
+            fill_JetBTag_hist(t, leaf, entry, loose, medium, tight)    
             
             
         if (analyze_this['Electron.PT']):
             
-            # returns noeleaf value in function to output later, since noeleaf
-            # is an immutable object
-            noeleaf = fill_Electron_hist(t, t.GetLeaf("Electron.PT"), noeleaf, entry, numElectrons, min_ept_per_event, max_ept_per_event)
+            
+            # define leaves
+            var = "Electron.PT"
+            
+            leaf = t.GetLeaf(var)
+        
+            if (leaf.GetLen() == 0):
+                noeleaf += 1
+                is_electron = True
+            
+            fill_Electron_hist(t, leaf, entry, numElectrons, min_ept_per_event, max_ept_per_event)
     
         if (analyze_this['MuonTight.PT']):
             
-            # returns noeleaf value in function to output later, since noeleaf
-            # is an immutable object
-            nouleaf = fill_Muon_hist(t, t.GetLeaf("MuonTight.PT"), nouleaf, entry, numMuons, min_upt_per_event, max_upt_per_event)
+            # define leaves
+            var = "MuonTight.PT"
+            
+            leaf = t.GetLeaf(var)
+            
+            if leaf.GetLen() == 0:
+                nouleaf += 1
+                is_muon = True
+            
+            fill_Muon_hist(t, leaf, entry, numMuons, min_upt_per_event, max_upt_per_event)
     
         if (analyze_this['MissingET.MET']):
-            fill_MET_hist(t, t.GetLeaf("MissingET.MET"), entry, MET)   
+        
+            # define leaves
+            var = "MissingET.MET"
+            
+            leaf = t.GetLeaf(var)
+        
+            fill_MET_hist(t, leaf, entry, MET)   
          
     
     
@@ -271,7 +304,7 @@ def main():
     f_wjet = rt.TFile("../../../ttbar_data/wjets_lepFilter_13TeV_3.root")
     
     # array of stuff needed to be analyzed
-    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MissingET.MET']
+    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'Electron.Phi', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MissingET.Phi']
     
     # bits to be set if want analyzed:
     # Jet.PT = 0 (rightmost binary bit)

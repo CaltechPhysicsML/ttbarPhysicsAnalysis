@@ -35,8 +35,6 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet):
     maxjetpt = INVALID
     minjetpt = INVALID
     
-    #print "MIN: %f MAX: %f" % (minjetpt, maxjetpt)
-    #print 
     #iterate through each value in leaf of jet pts
     for i in range(leaf.GetLen()):
         curr_val = leaf.GetValue(i) # get the value
@@ -119,7 +117,7 @@ numJets values to fill. Normalizes the numJets histogram.
 
 '''
 
-def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet):
+def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet, phileaf):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
@@ -128,6 +126,8 @@ def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet):
     maxjetpt = INVALID
     minjetpt = INVALID
     
+    #tracker for phi
+    maxpt_phi = INVALID
     
     #iterate through each value in leaf of jet pts
     for i in range(leaf.GetLen()):
@@ -141,7 +141,8 @@ def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet):
             
         if ((curr_val > maxjetpt) | (maxjetpt == INVALID)):
             maxjetpt = curr_val
-        
+            maxpt_phi = phileaf.GetValue(i)
+            
         if ((curr_val < minjetpt) | (minjetpt == INVALID)):
             minjetpt = curr_val
              
@@ -150,6 +151,8 @@ def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet):
     numElectrons.Fill(cntr) 
     maxJet.Fill(maxjetpt)
     minJet.Fill(minjetpt)
+    
+    return (maxjetpt, maxpt_phi)
     
 
 
@@ -162,7 +165,7 @@ numJets values to fill. Normalizes the numJets histogram.
 
 '''
 
-def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet):
+def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet, phileaf):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
@@ -171,6 +174,8 @@ def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet):
     maxjetpt = INVALID
     minjetpt = INVALID
     
+    #tracker for phi
+    maxpt_phi = INVALID
     
     #iterate through each value in leaf of jet pts
     for i in range(leaf.GetLen()):
@@ -184,6 +189,7 @@ def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet):
             
         if ((curr_val > maxjetpt) | (maxjetpt == INVALID)):
             maxjetpt = curr_val
+            maxpt_phi = phileaf.GetValue(i)
         
         if ((curr_val < minjetpt) | (minjetpt == INVALID)):
             minjetpt = curr_val
@@ -196,7 +202,7 @@ def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet):
     maxJet.Fill(maxjetpt)
     minJet.Fill(minjetpt) 
     
-    
+    return (maxjetpt, maxpt_phi)
 
 
 
@@ -209,19 +215,22 @@ numJets values to fill. Normalizes the numJets histogram.
 
 '''
 
-def fill_MET_hist(tree, leaf, entry, MET):
+def fill_MET_hist(tree, leaf, entry, MET, phileaf):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
     
+    met_phi = INVALID
     
     #iterate through each value in leaf of jet pts
     for i in range(leaf.GetLen()):
         curr_val = leaf.GetValue(i) # get the value     
-    
+        met_phi = phileaf.GetValue(i)
     
     # fill MET value     
     MET.Fill(curr_val) 
+    
+    return (curr_val, met_phi)
     
     
     

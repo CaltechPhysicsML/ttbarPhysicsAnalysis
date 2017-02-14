@@ -84,25 +84,6 @@ def do_analysis(f, eventtype, analyze_this):
 
     else:
         print "Skipped Electron.PT" 
-        
-    
-    if (analyze_this['Electron.Phi']):
-        print "Initializing Electron.Phi...\n"
-                
-        # create the histograms
-        electronPhi = Hist(NBINS,NLO,NHI, title = 'electronPhi ' + eventtype, legendstyle = 'L')
-
-        # interesting values to plot
-        max_ept_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Max ElectronPT/Event ' + eventtype, legendstyle = 'L')
-        min_ept_per_event = Hist(PT_NBINS,PT_NLO,PT_NHI, title = 'Min ElectronPT/Event ' + eventtype, legendstyle = 'L')
-        
-        # initialize any variable-specific constants here:
-        
-        # counter for no electrons
-        noeleaf = 0
-
-    else:
-        print "Skipped Electron.PT" 
     
         
         
@@ -133,11 +114,17 @@ def do_analysis(f, eventtype, analyze_this):
         MET = Hist(MET_NBINS, MET_NLO, MET_NHI, title = 'MET ' + eventtype, legendstyle = 'L')
         
     else:
-        print "MissingET.MET"    
+        print "Skipped MissingET.MET" 
         
         
+    if (analyze_this['MT (NON-LEAF)']):
+        print "Initializing MT...\n"   
         
+        # create the histograms
+        MT = Hist(MT_NBINS, MT_NLO, MT_NHI, title = 'MT ' + eventtype, legendstyle = 'L')
         
+    else:
+        print "Skipped MT"
         
         
         
@@ -162,6 +149,12 @@ def do_analysis(f, eventtype, analyze_this):
         # to check whether each entry is electron or muon
         is_electron = False
         is_muon = False
+        
+        e_maxpt = 0
+        e_maxpt_phi = 0
+        
+        u_maxpt = 0
+        u_maxpt_phi = 0
         
         if (analyze_this['Jet.PT']):
         
@@ -189,12 +182,20 @@ def do_analysis(f, eventtype, analyze_this):
             var = "Electron.PT"
             
             leaf = t.GetLeaf(var)
-        
+            phileaf = t.GetLeaf('Electron.Phi')
+            
+            
+            # returns phi of max pt for entry
+            (e_maxpt, e_maxpt_phi) = fill_Electron_hist(t, leaf, entry, numElectrons, min_ept_per_event, max_ept_per_event, phileaf)
+            
             if (leaf.GetLen() == 0):
                 noeleaf += 1
+                e_maxpt = 0
+                e_maxpt_phi = 0
+            else:
                 is_electron = True
-            
-            fill_Electron_hist(t, leaf, entry, numElectrons, min_ept_per_event, max_ept_per_event)
+                
+                
     
         if (analyze_this['MuonTight.PT']):
             
@@ -202,23 +203,41 @@ def do_analysis(f, eventtype, analyze_this):
             var = "MuonTight.PT"
             
             leaf = t.GetLeaf(var)
+            phileaf = t.GetLeaf('MuonTight.Phi')
+            
+            
+            (u_maxpt, u_maxpt_phi) = fill_Muon_hist(t, leaf, entry, numMuons, min_upt_per_event, max_upt_per_event, phileaf)
             
             if leaf.GetLen() == 0:
                 nouleaf += 1
+                u_maxpt = 0
+                u_maxpt_phi = 0
+            else:
                 is_muon = True
-            
-            fill_Muon_hist(t, leaf, entry, numMuons, min_upt_per_event, max_upt_per_event)
+                
+    
     
         if (analyze_this['MissingET.MET']):
         
             # define leaves
             var = "MissingET.MET"
             
-            leaf = t.GetLeaf(var)
-        
-            fill_MET_hist(t, leaf, entry, MET)   
+            leaf = t.GetLeaf(var)    
+            phileaf = t.GetLeaf('MissingET.Phi')        
+            
+            (met, metphi) = fill_MET_hist(t, leaf, entry, MET, phileaf)   
          
-    
+        if (analyze_this['MT (NON-LEAF)']):
+            #print "ok got here"
+            #print "here ",e_maxpt, e_maxpt_phi, u_maxpt, u_maxpt_phi, met, metphi
+            
+            mt_val = get_mt(e_maxpt, e_maxpt_phi, u_maxpt, u_maxpt_phi, met, metphi)
+            if mt_val == 0:
+                MT.Fill(INVALID)
+            else:
+                MT.Fill(mt_val)
+            
+            #print mt_val
     
     
     
@@ -260,6 +279,11 @@ def do_analysis(f, eventtype, analyze_this):
    
         # normalize
         MET.Scale(1/norm)
+        
+    if (analyze_this['MT (NON-LEAF)']):
+        
+        #normalize
+        MT.Scale(1/norm)
 
     print ""
     print "\nDone!\n"
@@ -292,6 +316,8 @@ def do_analysis(f, eventtype, analyze_this):
     
     MET.Write("MET")
     
+    MT.Write("MT")
+    
     newf.Close()
 
 
@@ -304,7 +330,8 @@ def main():
     f_wjet = rt.TFile("../../../ttbar_data/wjets_lepFilter_13TeV_3.root")
     
     # array of stuff needed to be analyzed
-    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'Electron.Phi', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MissingET.Phi']
+    # NON-LEAF refers to internal analysis from other leaves
+    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MT (NON-LEAF)']
     
     # bits to be set if want analyzed:
     # Jet.PT = 0 (rightmost binary bit)
@@ -354,7 +381,7 @@ def main():
     print ""
     
     # run functions you want here
-    do_analysis(f_wjet, 'wjet', analyze_this)
+    do_analysis(f_qcd, 'qcd', analyze_this)
                  
 
 if __name__ == "__main__":

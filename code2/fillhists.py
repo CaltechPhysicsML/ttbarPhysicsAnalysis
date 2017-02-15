@@ -26,7 +26,7 @@ and maxJet histograms.
 
 '''
 
-def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet):
+def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet, HTfill, HT):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
@@ -34,6 +34,8 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet):
     # max & min vals, just make initial value
     maxjetpt = INVALID
     minjetpt = INVALID
+    
+    HT_total = 0
     
     #iterate through each value in leaf of jet pts
     for i in range(leaf.GetLen()):
@@ -51,6 +53,9 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet):
         
         if ((curr_val < minjetpt) | (minjetpt == INVALID)):
             minjetpt = curr_val
+            
+        if (HTfill):
+            HT_total = HT_total + curr_val
     
     
    #if (minjetpt < 10.0):       
@@ -60,6 +65,9 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet):
     numJets.Fill(cntr) 
     maxJet.Fill(maxjetpt)
     minJet.Fill(minjetpt) 
+    
+    if (HTfill):
+        HT.Fill(HT_total)
         
 
 

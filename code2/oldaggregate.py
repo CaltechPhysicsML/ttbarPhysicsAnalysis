@@ -31,7 +31,7 @@ create histograms. Fill necessary trees, and create plots.
 
 '''
    
-def do_analysis(f, eventtype, analyze_this, outfile):
+def do_analysis(f, eventtype, analyze_this):
     
     # get trees from files
     t = f.Get("Delphes")
@@ -316,31 +316,32 @@ def do_analysis(f, eventtype, analyze_this, outfile):
 
 
 
+    # write to TFiles
+    newf = rt.TFile(eventtype + "hists.root", "recreate")
     
+    numJets.Write("numJets")
+    max_jetpt_per_event.Write("max_jetpt_per_event")
+    min_jetpt_per_event.Write("min_jetpt_per_event")
     
-    numJets.Write(eventtype + "numJets")
-    max_jetpt_per_event.Write(eventtype + "max_jetpt_per_event")
-    min_jetpt_per_event.Write(eventtype + "min_jetpt_per_event")
+    loose.Write("loose")
+    medium.Write("medium")
+    tight.Write("tight")   
     
-    loose.Write(eventtype + "loose")
-    medium.Write(eventtype + "medium")
-    tight.Write(eventtype + "tight")   
+    numElectrons.Write("numElectrons")
+    max_ept_per_event.Write("max_ept_per_event")
+    min_ept_per_event.Write("min_ept_per_event")
     
-    numElectrons.Write(eventtype + "numElectrons")
-    max_ept_per_event.Write(eventtype + "max_ept_per_event")
-    min_ept_per_event.Write(eventtype + "min_ept_per_event")
+    numMuons.Write("numMuons")
+    max_upt_per_event.Write("max_upt_per_event")
+    min_upt_per_event.Write("min_upt_per_event")
     
-    numMuons.Write(eventtype + "numMuons")
-    max_upt_per_event.Write(eventtype + "max_upt_per_event")
-    min_upt_per_event.Write(eventtype + "min_upt_per_event")
+    MET.Write("MET")
     
-    MET.Write(eventtype + "MET")
+    MT.Write("MT")
     
-    MT.Write(eventtype + "MT")
+    HT.Write("HT")
     
-    HT.Write(eventtype + "HT")
-    
-    
+    newf.Close()
 
 
    
@@ -356,7 +357,6 @@ def main():
     
     f_in = []
     f_in_type = []
-    
     
     # array of stuff needed to be analyzed
     # NON-LEAF refers to internal analysis from other leaves
@@ -422,7 +422,7 @@ def main():
                         if (f_type_add != 'tt' and f_type_add != 'qcd' and f_type_add != 'wjet'):
                             print "\nInvalid file type, try again"
                         else:
-                            f_in.append(rt.TFile(f_add))
+                            f_in.append(f_add)
                             f_in_type.append(f_type_add)
 
                     else:
@@ -469,30 +469,10 @@ def main():
         
     print ""
     
-    if (int(raw_input("\nPut everything in one root file or separate " + 
-    "root files? Press 'Enter' for separate and '0' for one file: ") or '1')):
-        concatenate = False
-    else:
-        print "\nWARNING: Can only concatenate ONE of each type (eg tt, qcd, wjet)"
-        concatenate = True
-    
     # run functions you want here
     for i in range(len(f_in)):
-        if (i == 0 and concatenate):
-            outfile_name = "all" 
-            
-            # write to TFiles
-            newf = rt.TFile(outfile_name + "hists.root", "recreate")   
-        elif (not concatenate):
-            outfile_name = str(f_in_type[i])  + "_" 
-            
-            if (i != 0):
-                newf.Close()
-            # write to TFiles
-            newf = rt.TFile(outfile_name + "hists.root", "recreate")
-            
-        do_analysis(f_in[i], f_in_type[i], analyze_this, outfile_name)
-    newf.Close()         
+        do_analysis(f_in[i], f_in_type[i], analyze_this)
+                 
 
 if __name__ == "__main__":
     main();

@@ -22,15 +22,18 @@ def get_pt_vector(pt_val, phi_val):
     return np.array([pt_val * math.cos( phi_val ), pt_val * math.sin( phi_val )])
  
 
-def get_total_ptvector(pt1, phi1, pt2, phi2):
-    return (get_pt_vector(pt1, phi1) + get_pt_vector(pt2, phi2))
+def get_max_ptvector(pt1, phi1, pt2, phi2):
+    if pt1 > pt2:
+        return get_pt_vector(pt1, phi1)
+    else:
+        return get_pt_vector(pt2, phi2)
     
 
 def get_mt(ept, ephi, upt, uphi, metpt, metphi):
     sumpt = ept + upt
-    totptvec = get_total_ptvector(ept, ephi, upt, uphi)
+    ptvec = get_max_ptvector(ept, ephi, upt, uphi)
     metvec = get_pt_vector(metpt, metphi)
-    return (math.sqrt(2 * ((sumpt * metpt) - np.dot(totptvec, metvec))))
+    return (math.sqrt(2 * ((sumpt * metpt) - np.dot(ptvec, metvec))))
     
 
 

@@ -347,10 +347,16 @@ def do_analysis(f, eventtype, analyze_this):
    
 def main():
 
-    # get files 
+    # get default debugging files 
     f_tt = rt.TFile("../../../ttbar_data/ttbar_lepFilter_13TeV_313.root")
     f_qcd = rt.TFile("../../../ttbar_data/qcd_lepFilter_13TeV_10.root")
     f_wjet = rt.TFile("../../../ttbar_data/wjets_lepFilter_13TeV_3.root")
+    
+    f_default = [f_tt, f_qcd, f_wjet]
+    f_type_default = ['tt', 'qcd', 'wjet']
+    
+    f_in = []
+    f_in_type = []
     
     # array of stuff needed to be analyzed
     # NON-LEAF refers to internal analysis from other leaves
@@ -370,8 +376,68 @@ def main():
     
     while True:
         
+        
+        # Determine which files to analyze
+        
+        # ask whether should use default files, which is one of each tt, qcd,
+        # and wjet event
+        
+        if (int(raw_input("\nUse default tt, qcd, and wjet files? (Press " +
+        "'Enter' if ok or '0' to enter your own: ") or '1')):
+            print "\nSetting default files..."
+            f_in = f_default
+            f_in_type = f_type_default
+            #continue
+        else:
+            # Keep adding files until no longer want to add files
+            while True:
+            
+                # Ask for file to add, or set to 0
+                f_add = str(raw_input("\nEnter a file path here or press " +
+                "'Enter' to skip/finish adding files: ")) or 0
+                
+                if (f_add != 0):
+                    f_type_add = str(raw_input("\ntt, qcd, or wjet? ")) or 0
+                
+                # Check if no files are added to f_in, and set to default
+                if (f_add == 0 and len(f_in) == 0):
+                    print "\nSetting default files..."
+                    f_in = f_default
+                    f_in_type = f_type_default
+                    break
+                    
+                # Files HAVE been added to f_in, but have no more files to add
+                elif (f_add == 0 and len(f_in) != 0):
+                    print "\nSetting files: \n" + "\n".join([str(f_in[i]) + ", " + str(f_in_type[i]) for i in range(len(f_in))])
+                    break
+                    
+                # Invalid file type
+                elif (f_add[len(f_add) - len('.root'):] != '.root'):
+                    print "\nInvalid file, try again"
+                    
+                # All other cases, and add file to f_in if there is file to add
+                else: 
+                    if(f_add):
+                        print f_type_add
+                        if (f_type_add != 'tt' and f_type_add != 'qcd' and f_type_add != 'wjet'):
+                            print "\nInvalid file type, try again"
+                        else:
+                            f_in.append(f_add)
+                            f_in_type.append(f_type_add)
+
+                    else:
+                        print "\nSetting default files..."
+                        f_in = f_default
+                        f_in_type = f_type_default
+                        break
+                
+            
+            
+            
+            
+        
         # if want all analyses done. Or statement ensures there is a default value
-        if (int(raw_input("\nPress 'Enter' if default analysis okay or '0' or " + 
+        if (int(raw_input("\nPress 'Enter' if default analysis okay or '0' to " + 
         "skip: ") or '1')):
         
             # default to do all analysis (set everything)
@@ -404,9 +470,8 @@ def main():
     print ""
     
     # run functions you want here
-    do_analysis(f_tt, 'tt', analyze_this)
-    do_analysis(f_qcd, 'qcd', analyze_this)
-    do_analysis(f_wjet, 'wjet', analyze_this)
+    for i in range(len(f_in)):
+        do_analysis(f_in[i], f_in_type[i], analyze_this)
                  
 
 if __name__ == "__main__":

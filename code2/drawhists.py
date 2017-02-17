@@ -118,6 +118,31 @@ def draw_JetPT(numJets_tt, maxjet_tt, minjet_tt, numJets_qcd, maxjet_qcd, minjet
     c4.SaveAs("jetpt_maxminpt_wjet.pdf")
     
     
+    
+    # all max jets
+    
+    #set line colors
+    maxjet_tt.SetLineColor(4)
+    maxjet_qcd.SetLineColor(8)  
+    maxjet_wjet.SetLineColor(2)  
+
+    
+    #begin drawing stuff
+    c5 = Canvas()
+    
+    maxjet_wjet.SetStats(0)
+    maxjet_wjet.Draw('HIST')
+    maxjet_qcd.Draw('HIST SAME')
+    maxjet_tt.Draw('HIST SAME')
+    
+    #make legend
+    l5 = Legend([maxjet_tt, maxjet_qcd, maxjet_wjet], textfont = 42, textsize = .03)
+    l5.Draw()
+    
+    #save as pdf
+    c5.SaveAs("jetpt_maxpts.pdf")
+    
+    
     #make the plots wait on screen
     #wait(True)
     
@@ -302,6 +327,29 @@ def draw_ElectronPT(numElectrons_tt, maxept_tt, minept_tt, numElectrons_qcd, max
     c4.SaveAs("ElectronPT_maxminpt_wjet.pdf")
     
     
+    # all max jets
+    
+    #set line colors
+    maxept_tt.SetLineColor(4)
+    maxept_qcd.SetLineColor(8)  
+    maxept_wjet.SetLineColor(2)  
+
+    
+    #begin drawing stuff
+    c5 = Canvas()
+    
+    maxept_qcd.SetStats(0)
+    maxept_qcd.Draw('HIST')
+    maxept_tt.Draw('HIST SAME')
+    maxept_wjet.Draw('HIST SAME')
+    
+    #make legend
+    l5 = Legend([maxept_tt, maxept_qcd, maxept_wjet], textfont = 42, textsize = .03)
+    l5.Draw()
+    
+    #save as pdf
+    c5.SaveAs("electronpt_maxpts.pdf")
+    
     #make the plots wait on screen
     #wait(True)
 
@@ -405,6 +453,33 @@ def draw_MuonPT(numMuons_tt, maxupt_tt, minupt_tt, numMuons_qcd, maxupt_qcd, min
     
     #save as pdf
     c4.SaveAs("MuonPT_maxminpt_wjet.pdf")
+    
+    
+    
+    # all max jets
+    
+    #set line colors
+    maxupt_tt.SetLineColor(4)
+    maxupt_qcd.SetLineColor(8)  
+    maxupt_wjet.SetLineColor(2)  
+
+    
+    #begin drawing stuff
+    c5 = Canvas()
+    
+    maxupt_qcd.SetStats(0)
+    maxupt_qcd.Draw('HIST')
+    maxupt_tt.Draw('HIST SAME')
+    maxupt_wjet.Draw('HIST SAME')
+    
+    #make legend
+    l5 = Legend([maxupt_tt, maxupt_qcd, maxupt_wjet], textfont = 42, textsize = .03)
+    l5.Draw()
+    
+    #save as pdf
+    c5.SaveAs("muonpt_maxpts.pdf")
+    
+    
     
     
     #make the plots wait on screen

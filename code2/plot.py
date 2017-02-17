@@ -55,19 +55,62 @@ def output_plots(f):
     
     draw_JetBTag(ttloose, ttmedium, tttight, qcdloose, qcdmedium, qcdtight, wjetloose, wjetmedium, wjettight)
     
+    # ELECTRON PT PLOTS
+    
+    ttnumelectrons = f.Get('ttnumElectrons')
+    ttmaxept = f.Get('ttmax_ept_per_event')
+    ttminept = f.Get('ttmin_ept_per_event')
+    
+    qcdnumelectrons = f.Get('qcdnumElectrons')
+    qcdmaxept = f.Get('qcdmax_ept_per_event')
+    qcdminept = f.Get('qcdmin_ept_per_event')
+    
+    wjetnumelectrons = f.Get('wjetnumElectrons')
+    wjetmaxept = f.Get('wjetmax_ept_per_event')
+    wjetminept = f.Get('wjetmin_ept_per_event')
+    
+    draw_ElectronPT(ttnumelectrons, ttmaxept, ttminept, qcdnumelectrons, qcdmaxept, qcdminept, wjetnumelectrons, wjetmaxept, wjetminept)
+    
+    # MUON PT PLOTS
+    
+    ttnummuons = f.Get('ttnumMuons')
+    ttmaxupt = f.Get('ttmax_upt_per_event')
+    ttminupt = f.Get('ttmin_upt_per_event')
+    
+    qcdnummuons = f.Get('qcdnumMuons')
+    qcdmaxupt = f.Get('qcdmax_upt_per_event')
+    qcdminupt = f.Get('qcdmin_upt_per_event')
+    
+    wjetnummuons = f.Get('wjetnumMuons')
+    wjetmaxupt = f.Get('wjetmax_upt_per_event')
+    wjetminupt = f.Get('wjetmin_upt_per_event')
+    
+    draw_MuonPT(ttnummuons, ttmaxupt, ttminupt, qcdnummuons, qcdmaxupt, qcdminupt, wjetnummuons, wjetmaxupt, wjetminupt)
     
     
+    # MET PLOTS
     
+    ttMET = f.Get('ttMET')
+    qcdMET = f.Get('qcdMET')
+    wjetMET = f.Get('wjetMET')    
     
+    draw_MET(ttMET, qcdMET, wjetMET)
     
+    # MT PLOTS
     
+    ttMT = f.Get('ttMT')
+    qcdMT = f.Get('qcdMT')
+    wjetMT = f.Get('wjetMT')    
     
+    draw_MT(ttMT, qcdMT, wjetMT)
     
+    # HT PLOTS
     
+    ttHT = f.Get('ttHT')
+    qcdHT = f.Get('qcdHT')
+    wjetHT = f.Get('wjetHT')    
     
-    
-    
-    
+    draw_HT(ttHT, qcdHT, wjetHT)
     
     
     

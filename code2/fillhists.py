@@ -35,7 +35,7 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet, HTfill, HT):
     maxjetpt = INVALID
     minjetpt = INVALID
     
-    HT_total = 0
+    HT_total = INVALID
     
     #iterate through each value in leaf of jet pts
     for i in range(leaf.GetLen()):
@@ -55,7 +55,8 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet, HTfill, HT):
             minjetpt = curr_val
             
         if (HTfill):
-            HT_total = HT_total + curr_val
+            if curr_val > 0:
+                HT_total = HT_total + curr_val
     
     
    #if (minjetpt < 10.0):       

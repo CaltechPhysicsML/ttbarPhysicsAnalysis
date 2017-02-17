@@ -25,7 +25,7 @@ def output_plots(f):
     
     # JET PT PLOTS
     
-    ttnumjets = f.Get('ttnumJets')
+    ttnumjets = f.Get('ttnumJets') 
     ttmaxjet = f.Get('ttmax_jetpt_per_event')
     ttminjet = f.Get('ttmin_jetpt_per_event')
     

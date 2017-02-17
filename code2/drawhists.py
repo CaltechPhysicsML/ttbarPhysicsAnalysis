@@ -10,6 +10,7 @@ from rootpy.plotting.style import get_style, set_style
 from rootpy.interactive import wait
 from rootpy.plotting.utils import draw
 import rootpy.plotting.root2matplotlib as rplt
+import matplotlib.pyplot as plt
 
 # self-written code imports
 
@@ -17,20 +18,25 @@ from parser_constants import * # get constants used in this file
 
 
 def draw_JetPT(numJets_tt, maxjet_tt, minjet_tt, numJets_qcd, maxjet_qcd, minjet_qcd, numJets_wjet, maxjet_wjet, minjet_wjet):
-
+  
+    
     #set line colors
     numJets_tt.SetLineColor(4)
     numJets_qcd.SetLineColor(8)
     numJets_wjet.SetLineColor(2)
-       
     
+    numJets_tt.legendstyle = 'L'
+    numJets_qcd.legendstyle = 'L'
+    numJets_wjet.legendstyle = 'L'
+    
+       
     #begin drawing stuff
     c1 = Canvas()
     numJets_wjet.SetStats(0)
     numJets_wjet.Draw('HIST')
     numJets_tt.Draw('HIST SAME')
     numJets_qcd.Draw('HIST SAME')
-    
+
     
     #make legend
     l1 = Legend([numJets_tt, numJets_qcd, numJets_wjet], textfont = 42, textsize = .03)
@@ -47,6 +53,9 @@ def draw_JetPT(numJets_tt, maxjet_tt, minjet_tt, numJets_qcd, maxjet_qcd, minjet
     #set line colors
     maxjet_tt.SetLineColor(4)
     minjet_tt.SetLineColor(8)  
+    
+    maxjet_tt.legendstyle = 'L'
+    minjet_tt.legendstyle = 'L'
     
     #begin drawing stuff
     c2 = Canvas()
@@ -65,7 +74,10 @@ def draw_JetPT(numJets_tt, maxjet_tt, minjet_tt, numJets_qcd, maxjet_qcd, minjet
     
     #set line colors
     maxjet_qcd.SetLineColor(4)
-    minjet_qcd.SetLineColor(8)  
+    minjet_qcd.SetLineColor(8) 
+    
+    maxjet_qcd.legendstyle = 'L'
+    minjet_qcd.legendstyle = 'L' 
     
     #begin drawing stuff
     c3 = Canvas()
@@ -87,6 +99,9 @@ def draw_JetPT(numJets_tt, maxjet_tt, minjet_tt, numJets_qcd, maxjet_qcd, minjet
     #set line colors
     maxjet_wjet.SetLineColor(4)
     minjet_wjet.SetLineColor(8)  
+    
+    maxjet_wjet.legendstyle = 'L'
+    minjet_wjet.legendstyle = 'L'
     
     #begin drawing stuff
     c4 = Canvas()
@@ -121,7 +136,19 @@ def draw_JetBTag(loose_tt, medium_tt, tight_tt, loose_qcd, medium_qcd, tight_qcd
     loose_wjet.SetLineColor(4)
     medium_wjet.SetLineColor(8)
     tight_wjet.SetLineColor(2)
-       
+    
+    
+    loose_tt.legendstyle = 'L'
+    medium_tt.legendstyle = 'L'
+    tight_tt.legendstyle = 'L'
+    
+    loose_qcd.legendstyle = 'L'
+    medium_qcd.legendstyle = 'L'
+    tight_qcd.legendstyle = 'L'
+    
+    loose_wjet.legendstyle = 'L'
+    medium_wjet.legendstyle = 'L'
+    tight_wjet.legendstyle = 'L'   
     
     #begin drawing stuff
     c1 = Canvas()
@@ -180,6 +207,10 @@ def draw_ElectronPT(numElectrons_tt, maxept_tt, minept_tt, numElectrons_qcd, max
     numElectrons_tt.SetLineColor(4)
     numElectrons_qcd.SetLineColor(8)
     numElectrons_wjet.SetLineColor(2)
+    
+    numElectrons_tt.legendstyle = 'L'
+    numElectrons_qcd.legendstyle = 'L'
+    numElectrons_wjet.legendstyle = 'L'
        
     
     #begin drawing stuff
@@ -207,6 +238,9 @@ def draw_ElectronPT(numElectrons_tt, maxept_tt, minept_tt, numElectrons_qcd, max
     maxept_tt.SetLineColor(4)
     minept_tt.SetLineColor(8)  
     
+    maxept_tt.legendstyle = 'L'
+    minept_tt.legendstyle = 'L'
+    
     #begin drawing stuff
     c2 = Canvas()
     minept_tt.SetStats(0)
@@ -225,6 +259,9 @@ def draw_ElectronPT(numElectrons_tt, maxept_tt, minept_tt, numElectrons_qcd, max
     #set line colors
     maxept_qcd.SetLineColor(4)
     minept_qcd.SetLineColor(8)  
+    
+    maxept_qcd.legendstyle = 'L'
+    minept_qcd.legendstyle = 'L'
     
     #begin drawing stuff
     c3 = Canvas()
@@ -245,7 +282,10 @@ def draw_ElectronPT(numElectrons_tt, maxept_tt, minept_tt, numElectrons_qcd, max
     #WJET
     #set line colors
     maxept_wjet.SetLineColor(4)
-    minept_wjet.SetLineColor(8)  
+    minept_wjet.SetLineColor(8) 
+    
+    maxept_wjet.legendstyle = 'L'
+    minept_wjet.legendstyle = 'L' 
     
     #begin drawing stuff
     c4 = Canvas()
@@ -272,6 +312,10 @@ def draw_MuonPT(numMuons_tt, maxupt_tt, minupt_tt, numMuons_qcd, maxupt_qcd, min
     numMuons_tt.SetLineColor(4)
     numMuons_qcd.SetLineColor(8)
     numMuons_wjet.SetLineColor(2)
+    
+    numMuons_tt.legendstyle = 'L'
+    numMuons_qcd.legendstyle = 'L'
+    numMuons_wjet.legendstyle = 'L'
        
     
     #begin drawing stuff
@@ -299,6 +343,9 @@ def draw_MuonPT(numMuons_tt, maxupt_tt, minupt_tt, numMuons_qcd, maxupt_qcd, min
     maxupt_tt.SetLineColor(4)
     minupt_tt.SetLineColor(8)  
     
+    maxupt_tt.legendstyle = 'L'
+    minupt_tt.legendstyle = 'L'
+    
     #begin drawing stuff
     c2 = Canvas()
     minupt_tt.SetStats(0)
@@ -317,6 +364,9 @@ def draw_MuonPT(numMuons_tt, maxupt_tt, minupt_tt, numMuons_qcd, maxupt_qcd, min
     #set line colors
     maxupt_qcd.SetLineColor(4)
     minupt_qcd.SetLineColor(8)  
+    
+    maxupt_qcd.legendstyle = 'L'
+    minupt_qcd.legendstyle = 'L'
     
     #begin drawing stuff
     c3 = Canvas()
@@ -338,6 +388,9 @@ def draw_MuonPT(numMuons_tt, maxupt_tt, minupt_tt, numMuons_qcd, maxupt_qcd, min
     #set line colors
     maxupt_wjet.SetLineColor(4)
     minupt_wjet.SetLineColor(8)  
+    
+    maxupt_wjet.legendstyle = 'L'
+    minupt_wjet.legendstyle = 'L'
     
     #begin drawing stuff
     c4 = Canvas()
@@ -364,6 +417,10 @@ def draw_MET(MET_tt, MET_qcd, MET_wjet):
     MET_tt.SetLineColor(4)
     MET_qcd.SetLineColor(8)
     MET_wjet.SetLineColor(2)
+    
+    MET_tt.legendstyle = 'L'
+    MET_qcd.legendstyle = 'L'
+    MET_wjet.legendstyle = 'L'
        
     
     #begin drawing stuff
@@ -392,6 +449,10 @@ def draw_MT(MT_tt, MT_qcd, MT_wjet):
     MT_qcd.SetLineColor(8)
     MT_wjet.SetLineColor(2)
        
+    MT_tt.legendstyle = 'L'
+    MT_qcd.legendstyle = 'L'
+    MT_wjet.legendstyle = 'L'
+    
     
     #begin drawing stuff
     c1 = Canvas()
@@ -420,6 +481,10 @@ def draw_HT(HT_tt, HT_qcd, HT_wjet):
     HT_qcd.SetLineColor(8)
     HT_wjet.SetLineColor(2)
        
+    HT_tt.legendstyle = 'L'
+    HT_qcd.legendstyle = 'L'
+    HT_wjet.legendstyle = 'L'
+    
     
     #begin drawing stuff
     c1 = Canvas()

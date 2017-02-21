@@ -34,14 +34,33 @@ def get_mt(ept, ephi, upt, uphi, metpt, metphi):
     ptvec = get_max_ptvector(ept, ephi, upt, uphi)
     metvec = get_pt_vector(metpt, metphi)
     return (math.sqrt(2 * ((sumpt * metpt) - np.dot(ptvec, metvec))))
-    
+
+
+# get phi values between 0 and 2pi; output value between -pi and pi
+def delta_phi(phi1, phi2):
+    dphi = phi1 - phi2
+    #x = -1 * np.sign(dphi) * (abs(dphi) % np.pi)  
+    norm_ang = abs(dphi) % (2*np.pi)
+    if (norm_ang == np.pi):
+        return dphi
+    elif (norm_ang < np.pi):
+        return np.sign(dphi) * (abs(dphi) % np.pi)
+    else:
+        return -1 * np.sign(dphi) * (abs(dphi) % np.pi)
+        
 
 
 
-
-    
-    
-    
+'''
+print delta_phi(-1.5*np.pi, 0) / np.pi
+print delta_phi(1.5*np.pi, 0) / np.pi
+print delta_phi(0.5*np.pi, 0) / np.pi
+print delta_phi(-0.5*np.pi, 0) / np.pi
+print delta_phi(np.pi, 0) / np.pi
+print delta_phi(-np.pi, 0) / np.pi
+print delta_phi(-1, 0)
+print delta_phi(1, 0)
+'''    
     
     
     

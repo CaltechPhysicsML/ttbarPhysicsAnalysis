@@ -18,15 +18,15 @@ from parser_constants import * # get constants used in this file
 
 '''
 
-fill_JetPT_hist(tree, leaf, numJets, minJet, maxJet)
+fill_JetPT_hist(chain, leaf, numJets, minJet, maxJet)
 
-Fills gives tree over nentries. Iterates through leaf values to extract
+Fills gives chain over nentries. Iterates through leaf values to extract
 numJets, minJet, and maxJet values to fill. Normalizes the numJets, minJet, 
 and maxJet histograms.
 
 '''
 
-def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet, HTfill, HT):
+def fill_JetPT_hist(chain, leaf, entry, numJets, minJet, maxJet, HTfill, HT):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
@@ -75,15 +75,15 @@ def fill_JetPT_hist(tree, leaf, entry, numJets, minJet, maxJet, HTfill, HT):
 
 '''
 
-fill_JetBTag_hist(nentries, tree, leaf, numJets, minJet, maxJet)
+fill_JetBTag_hist(nentries, chain, leaf, numJets, minJet, maxJet)
 
-Fills gives tree over nentries given. Iterates through leaf values to extract
+Fills gives chain over nentries given. Iterates through leaf values to extract
 numJets, minJet, and maxJet values to fill. Normalizes the numJets, minJet, 
 and maxJet histograms.
 
 '''
 
-def fill_JetBTag_hist(tree, leaf, entry, numLoose, numMedium, numTight):
+def fill_JetBTag_hist(chain, leaf, entry, numLoose, numMedium, numTight):
 
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr_tight = 0
@@ -119,14 +119,14 @@ def fill_JetBTag_hist(tree, leaf, entry, numLoose, numMedium, numTight):
 
 '''
 
-fill_Electron_tree(nentries, tree, leaf, numJets, minJet, maxJet)
+fill_Electron_chain(nentries, chain, leaf, numJets, minJet, maxJet)
 
-Fills gives tree over nentries given. Iterates through leaf values to extract
+Fills gives chain over nentries given. Iterates through leaf values to extract
 numJets values to fill. Normalizes the numJets histogram.
 
 '''
 
-def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet, phileaf):
+def fill_Electron_hist(chain, leaf, entry, numElectrons, minJet, maxJet, phileaf):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
@@ -167,14 +167,14 @@ def fill_Electron_hist(tree, leaf, entry, numElectrons, minJet, maxJet, phileaf)
 
 '''
 
-fill_Muon_tree(nentries, tree, leaf, numJets, minJet, maxJet)
+fill_Muon_chain(nentries, chain, leaf, numJets, minJet, maxJet)
 
-Fills gives tree over nentries given. Iterates through leaf values to extract
+Fills gives chain over nentries given. Iterates through leaf values to extract
 numJets values to fill. Normalizes the numJets histogram.
 
 '''
 
-def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet, phileaf):
+def fill_Muon_hist(chain, leaf, entry, numMuons, minJet, maxJet, phileaf):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0
@@ -217,14 +217,14 @@ def fill_Muon_hist(tree, leaf, entry, numMuons, minJet, maxJet, phileaf):
 
 '''
 
-fill_MET_tree(nentries, tree, leaf, numJets)
+fill_MET_chain(nentries, chain, leaf, numJets)
 
-Fills gives tree over nentries given. Iterates through leaf values to extract
+Fills gives chain over nentries given. Iterates through leaf values to extract
 numJets values to fill. Normalizes the numJets histogram.
 
 '''
 
-def fill_MET_hist(tree, leaf, entry, MET, phileaf):
+def fill_MET_hist(chain, leaf, entry, MET, phileaf):
     
     # counter for number of values per entry > JETPT_THRESHOLD
     cntr = 0

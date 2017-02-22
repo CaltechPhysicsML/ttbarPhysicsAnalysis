@@ -135,8 +135,16 @@ def do_analysis(f, eventtype, analyze_this, outfile):
     else:
         print "Skipped HT"
         
+    
+    if (analyze_this['DELTA PHI (NON-LEAF)']):
+        print "Initializing Delta Phi...\n"   
         
+        # create the histograms
+        DPHI = Hist(30, -1*np.pi, np.pi, title = 'Delta Phi ' + eventtype, legendstyle = 'L')
         
+    else:
+        print "Skipped HT"    
+       
         
         
         
@@ -253,8 +261,18 @@ def do_analysis(f, eventtype, analyze_this, outfile):
             else:
                 MT.Fill(mt_val)
             
-            #print mt_val
-    
+        if (analyze_this['DELTA PHI (NON-LEAF)']):
+            
+            if e_maxpt > u_maxpt:
+                lphi = e_maxpt_phi
+            else:
+                lphi = u_maxpt_phi
+            
+            dphival = delta_phi(metphi, lphi)
+            #dphi_MET-jet(metphi, 
+            #print dphival
+            DPHI.Fill(dphival)
+            
     
     
     
@@ -305,11 +323,16 @@ def do_analysis(f, eventtype, analyze_this, outfile):
         
         #normalize
         HT.Scale(1/norm)
+        
+    if (analyze_this['DELTA PHI (NON-LEAF)']):
+        
+        #normalize
+        DPHI.Scale(1/norm)
 
     print ""
     print "\nDone!\n"
 
-
+    
 
 
 
@@ -340,6 +363,8 @@ def do_analysis(f, eventtype, analyze_this, outfile):
     
     HT.Write(eventtype + "HT")
     
+    DPHI.Write(eventtype + "dphi")
+    
     
 
 
@@ -360,7 +385,7 @@ def main():
     
     # array of stuff needed to be analyzed
     # NON-LEAF refers to internal analysis from other leaves
-    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MT (NON-LEAF)', 'HT (NON-LEAF)']
+    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MT (NON-LEAF)', 'HT (NON-LEAF)', 'DELTA PHI (NON-LEAF)']
     
     # bits to be set if want analyzed:
     # Jet.PT = 0 (rightmost binary bit)

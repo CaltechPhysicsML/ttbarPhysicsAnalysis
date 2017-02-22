@@ -38,30 +38,36 @@ def get_mt(ept, ephi, upt, uphi, metpt, metphi):
 
 # get phi values between 0 and 2pi; output value between -pi and pi
 def delta_phi(phi1, phi2):
-    dphi = phi1 - phi2
-    #x = -1 * np.sign(dphi) * (abs(dphi) % np.pi)  
+    dphi = phi1 - phi2 
     norm_ang = abs(dphi) % (2*np.pi)
     if (norm_ang == np.pi):
-        return dphi
+        return np.pi
     elif (norm_ang < np.pi):
-        return np.sign(dphi) * (abs(dphi) % np.pi)
+        return np.sign(dphi) * norm_ang
     else:
-        return -1 * np.sign(dphi) * (abs(dphi) % np.pi)
+        return np.sign(dphi) * ((abs(dphi) % np.pi) - np.pi)
         
 
+def old_dphi(phi1, phi2):
+  dphi = phi1-phi2;
+  while (dphi > np.pi):
+    dphi = dphi - (2*np.pi)
+  while (dphi <= (-1*np.pi)):
+    dphi = dphi + (2*np.pi);
+  return dphi
 
-
-'''
-print delta_phi(-1.5*np.pi, 0) / np.pi
-print delta_phi(1.5*np.pi, 0) / np.pi
-print delta_phi(0.5*np.pi, 0) / np.pi
-print delta_phi(-0.5*np.pi, 0) / np.pi
-print delta_phi(np.pi, 0) / np.pi
-print delta_phi(-np.pi, 0) / np.pi
-print delta_phi(-1, 0)
-print delta_phi(1, 0)
-'''    
+ 
+def test_newf():
+    for i in np.linspace(-10*np.pi, 10*np.pi, 10000*np.pi):
+        if (i % (10*np.pi) == 0):
+            print i
     
+        for j in np.linspace(-10*np.pi, 10*np.pi, 10000*np.pi):
+            x = delta_phi(i, j)
+            y = old_dphi(i, j)
+            if x != y:
+                print 'NOT MATCHING ' + str(x) + ' ' + str(y)
+                print str(i - j)
     
     
     

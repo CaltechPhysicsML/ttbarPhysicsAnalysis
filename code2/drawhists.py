@@ -151,15 +151,15 @@ def draw_JetBTag(loose_tt, medium_tt, tight_tt, loose_qcd, medium_qcd, tight_qcd
 
     #set line colors
     loose_tt.SetLineColor(4)
-    medium_tt.SetLineColor(8)
-    tight_tt.SetLineColor(2)
+    medium_tt.SetLineColor(4)
+    tight_tt.SetLineColor(4)
     
-    loose_qcd.SetLineColor(4)
+    loose_qcd.SetLineColor(8)
     medium_qcd.SetLineColor(8)
-    tight_qcd.SetLineColor(2)
+    tight_qcd.SetLineColor(8)
     
-    loose_wjet.SetLineColor(4)
-    medium_wjet.SetLineColor(8)
+    loose_wjet.SetLineColor(2)
+    medium_wjet.SetLineColor(2)
     tight_wjet.SetLineColor(2)
     
     
@@ -177,34 +177,34 @@ def draw_JetBTag(loose_tt, medium_tt, tight_tt, loose_qcd, medium_qcd, tight_qcd
     
     #begin drawing stuff
     c1 = Canvas()
-    tight_tt.SetStats(0)
-    tight_tt.Draw('HIST')
-    medium_tt.Draw('HIST SAME')
+    loose_wjet.SetStats(0)
+    loose_wjet.Draw('HIST')
+    loose_qcd.Draw('HIST SAME')
     loose_tt.Draw('HIST SAME')
     
     
     #make legend
-    l1 = Legend([tight_tt, medium_tt, loose_tt], textfont = 42, textsize = .03)
+    l1 = Legend([loose_tt, loose_qcd, loose_wjet], textfont = 42, textsize = .03)
     l1.Draw()
     
     #save as pdf
-    c1.SaveAs("jetbtag_tt.pdf");
+    c1.SaveAs("jetbtag_loose.pdf");
     
     
     
     c2 = Canvas()
-    tight_qcd.SetStats(0)
-    tight_qcd.Draw('HIST')
+    medium_wjet.SetStats(0)
+    medium_wjet.Draw('HIST')
     medium_qcd.Draw('HIST SAME')
-    loose_qcd.Draw('HIST SAME')
+    medium_tt.Draw('HIST SAME')
     
     
     #make legend
-    l2 = Legend([tight_qcd, medium_qcd, loose_qcd], textfont = 42, textsize = .03)
+    l2 = Legend([medium_tt, medium_qcd, medium_wjet], textfont = 42, textsize = .03)
     l2.Draw()
     
     #save as pdf
-    c2.SaveAs("jetbtag_qcd.pdf");
+    c2.SaveAs("jetbtag_medium.pdf");
     
     
     
@@ -212,16 +212,16 @@ def draw_JetBTag(loose_tt, medium_tt, tight_tt, loose_qcd, medium_qcd, tight_qcd
     c3 = Canvas()
     tight_wjet.SetStats(0)
     tight_wjet.Draw('HIST')
-    medium_wjet.Draw('HIST SAME')
-    loose_wjet.Draw('HIST SAME')
+    tight_qcd.Draw('HIST SAME')
+    tight_tt.Draw('HIST SAME')
     
     
     #make legend
-    l3 = Legend([tight_wjet, medium_wjet, loose_wjet], textfont = 42, textsize = .03)
+    l3 = Legend([tight_wjet, tight_qcd, tight_tt], textfont = 42, textsize = .03)
     l3.Draw()
     
     #save as pdf
-    c3.SaveAs("jetbtag_wjet.pdf");
+    c3.SaveAs("jetbtag_tight.pdf");
     
     #wait(True)
     

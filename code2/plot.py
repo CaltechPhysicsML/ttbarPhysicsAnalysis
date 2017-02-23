@@ -127,7 +127,7 @@ def output_plots(f):
 
 def main():
 
-    f_default = rt.TFile('allhists.root')
+    f_default = rt.TFile('chainedhists.root')
 
     if (int(raw_input("\nUse default allhists.root file? (Press " +
     "'Enter' if ok or '0' to enter your own: ") or '1')):

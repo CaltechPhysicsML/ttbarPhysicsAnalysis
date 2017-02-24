@@ -580,7 +580,7 @@ def draw_HT(HT_tt, HT_qcd, HT_wjet):
     #wait(True)
     
 
-def draw_DPHI(DPHI_tt, DPHI_qcd, DPHI_wjet):
+def draw_DPHIml(DPHI_tt, DPHI_qcd, DPHI_wjet):
 
     #set line colors
     DPHI_tt.SetLineColor(4)
@@ -605,12 +605,40 @@ def draw_DPHI(DPHI_tt, DPHI_qcd, DPHI_wjet):
     l1.Draw()
     
     #save as pdf
-    c1.SaveAs("DPHI.pdf");
+    c1.SaveAs("DPHI_metlep.pdf");
     
     #make the plots wait on screen
-    wait(True)    
+    #wait(True)    
+    
+def draw_DPHImj(DPHI_tt, DPHI_qcd, DPHI_wjet):
+
+    #set line colors
+    DPHI_tt.SetLineColor(4)
+    DPHI_qcd.SetLineColor(8)
+    DPHI_wjet.SetLineColor(2)
+       
+    DPHI_tt.legendstyle = 'L'
+    DPHI_qcd.legendstyle = 'L'
+    DPHI_wjet.legendstyle = 'L'
     
     
+    #begin drawing stuff
+    c1 = Canvas()
+    DPHI_wjet.SetStats(0)
+    DPHI_wjet.Draw('HIST')
+    DPHI_tt.Draw('HIST SAME')
+    DPHI_qcd.Draw('HIST SAME')
+    
+    
+    #make legend
+    l1 = Legend([DPHI_tt, DPHI_qcd, DPHI_wjet], textfont = 42, textsize = .03)
+    l1.Draw()
+    
+    #save as pdf
+    c1.SaveAs("DPHI_metjet.pdf");
+    
+    #make the plots wait on screen
+    wait(True)        
     
     
     

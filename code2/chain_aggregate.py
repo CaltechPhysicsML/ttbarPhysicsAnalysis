@@ -141,10 +141,12 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
         print "Initializing Delta Phi...\n"   
         
         # create the histograms
-        DPHI = Hist(30, -1*np.pi, np.pi, title = 'Delta Phi ' + eventtype, legendstyle = 'L')
+        DPHI_metlep = Hist(30, -1*np.pi, np.pi, title = 'Delta Phi (MET-lep) ' + eventtype, legendstyle = 'L')
+        
+        DPHI_metjet = Hist(30, -1*np.pi, np.pi, title = 'Delta Phi (MET-jet)' + eventtype, legendstyle = 'L')
         
     else:
-        print "Skipped HT"    
+        print "Skipped DELTA PHI"    
        
         
         
@@ -174,12 +176,16 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
         u_maxpt = 0
         u_maxpt_phi = 0
         
+        jet_maxpt = 0
+        jet_maxpt_phi = 0
+        
         if (analyze_this['Jet.PT']):
         
             # define leaves       
             var = 'Jet.PT'
             
             leaf = chain.GetLeaf(var)
+            phileaf = chain.GetLeaf('Jet.Phi')
             
             # analyze with Jet.PT because HT is sum of Jet.PTs
             if (analyze_this['HT (NON-LEAF)']):
@@ -187,7 +193,8 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             else:
                 HTfill = False
             
-            fill_JetPT_hist(chain, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event, HTfill, HT)
+            # returns phi of max pt for entry
+            (jet_maxpt, jet_maxpt_phi) = fill_JetPT_hist(chain, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event, HTfill, HT, phileaf)
             
             
         
@@ -269,10 +276,11 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             else:
                 lphi = u_maxpt_phi
             
-            dphival = delta_phi(metphi, lphi)
-            #dphi_MET-jet(metphi, 
-            #print dphival
-            DPHI.Fill(dphival)
+            dphi_metlep_val = delta_phi(metphi, lphi)
+            dphi_metjet_val = delta_phi(metphi, jet_maxpt_phi) 
+            
+            DPHI_metlep.Fill(dphi_metlep_val)
+            DPHI_metjet.Fill(dphi_metjet_val)
             
     
     
@@ -328,7 +336,8 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
     if (analyze_this['DELTA PHI (NON-LEAF)']):
         
         #normalize
-        DPHI.Scale(1/norm)
+        DPHI_metlep.Scale(1/norm)
+        DPHI_metjet.Scale(1/norm)
 
     print ""
     print "\nDone!\n"
@@ -364,7 +373,8 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
     
     HT.Write(eventtype + "HT")
     
-    DPHI.Write(eventtype + "dphi")
+    DPHI_metlep.Write(eventtype + "dphi_metlep")
+    DPHI_metjet.Write(eventtype + "dphi_metjet")
     
     
 

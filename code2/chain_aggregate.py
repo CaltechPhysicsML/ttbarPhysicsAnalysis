@@ -148,8 +148,13 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
     else:
         print "Skipped DELTA PHI"    
        
+    if (analyze_this['DELTA R (NON-LEAF)']):
+        print "Initializing Delta R...\n"
         
-        
+        #create histograms
+        DR = Hist(50, 0, 2*np.pi, title = 'DELTA R ' + eventtype, legendstyle = 'L')    
+    else:
+        print "Skipped DELTA R"    
         
         
     
@@ -178,36 +183,14 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
         
         jet_maxpt = 0
         jet_maxpt_phi = 0
+        jet_maxpt_eta = 0
         
-        if (analyze_this['Jet.PT']):
+        met = 0
+        met_phi = 0
+        met_eta = 0
         
-            # define leaves       
-            var = 'Jet.PT'
-            
-            leaf = chain.GetLeaf(var)
-            phileaf = chain.GetLeaf('Jet.Phi')
-            
-            # analyze with Jet.PT because HT is sum of Jet.PTs
-            if (analyze_this['HT (NON-LEAF)']):
-                HTfill = True
-            else:
-                HTfill = False
-            
-            # returns phi of max pt for entry
-            (jet_maxpt, jet_maxpt_phi) = fill_JetPT_hist(chain, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event, HTfill, HT, phileaf)
-            
-            
+        lepton_vec = []
         
-        if (analyze_this['Jet.BTag']):
-        
-            # define leaves
-            var = "Jet.BTag"
-            
-            leaf = chain.GetLeaf(var)
-        
-            fill_JetBTag_hist(chain, leaf, entry, loose, medium, tight)    
-            
-            
         if (analyze_this['Electron.PT']):
             
             
@@ -216,15 +199,18 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             
             leaf = chain.GetLeaf(var)
             phileaf = chain.GetLeaf('Electron.Phi')
-            
+            etaleaf = chain.GetLeaf('Electron.Eta')
             
             # returns phi of max pt for entry
-            (e_maxpt, e_maxpt_phi) = fill_Electron_hist(chain, leaf, entry, numElectrons, min_ept_per_event, max_ept_per_event, phileaf)
+            (e_maxpt, e_maxpt_phi, e_maxpt_eta) = fill_Electron_hist(chain, leaf, entry, numElectrons, min_ept_per_event, max_ept_per_event, phileaf, etaleaf, lepton_vec)
+            
+            #print lepton_vec
             
             if (leaf.GetLen() == 0):
                 noeleaf += 1
-                e_maxpt = 0
-                e_maxpt_phi = 0
+                e_maxpt = INVALID
+                e_maxpt_phi = INVALID
+                e_maxpt_eta = INVALID
             else:
                 is_electron = True
                 
@@ -237,17 +223,65 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             
             leaf = chain.GetLeaf(var)
             phileaf = chain.GetLeaf('MuonTight.Phi')
+            etaleaf = chain.GetLeaf('MuonTight.Eta')
             
             
-            (u_maxpt, u_maxpt_phi) = fill_Muon_hist(chain, leaf, entry, numMuons, min_upt_per_event, max_upt_per_event, phileaf)
+            (u_maxpt, u_maxpt_phi, u_maxpt_eta) = fill_Muon_hist(chain, leaf, entry, numMuons, min_upt_per_event, max_upt_per_event, phileaf, etaleaf, lepton_vec)
             
             if leaf.GetLen() == 0:
                 nouleaf += 1
-                u_maxpt = 0
-                u_maxpt_phi = 0
+                u_maxpt = INVALID
+                u_maxpt_phi = INVALID
+                u_maxpt_eta = INVALID
             else:
                 is_muon = True
                 
+        
+        # Get preferred lepton for future calcs
+        if e_maxpt >= u_maxpt:
+            lpt = e_maxpt
+            lphi = e_maxpt_phi
+            leta = e_maxpt_eta
+        else:
+            lpt = u_maxpt
+            lphi = u_maxpt_phi
+            leta = u_maxpt_eta
+        
+        
+        
+        if (analyze_this['Jet.PT']):
+        
+            # define leaves       
+            var = 'Jet.PT'
+            
+            leaf = chain.GetLeaf(var)
+            phileaf = chain.GetLeaf('Jet.Phi')
+            etaleaf = chain.GetLeaf('Jet.Eta')
+            
+            # analyze with Jet.PT because HT is sum of Jet.PTs
+            if (analyze_this['HT (NON-LEAF)']):
+                HTfill = True
+            else:
+                HTfill = False
+            
+            # returns phi of max pt for entry
+            (jet_maxpt, jet_maxpt_phi, jet_maxpt_eta) = fill_JetPT_hist(chain, leaf, entry, numJets, min_jetpt_per_event, max_jetpt_per_event, HTfill, HT, phileaf, etaleaf, lepton_vec)
+            
+            if (leaf.GetLen() == 0):
+                jet_maxpt = INVALID
+                jet_maxpt_phi = INVALID
+                jet_maxpt_eta = INVALID
+            
+        
+        if (analyze_this['Jet.BTag']):
+        
+            # define leaves
+            var = "Jet.BTag"
+            
+            leaf = chain.GetLeaf(var)
+        
+            fill_JetBTag_hist(chain, leaf, entry, loose, medium, tight)    
+            
     
         if (analyze_this['MissingET.MET']):
         
@@ -255,15 +289,22 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             var = "MissingET.MET"
             
             leaf = chain.GetLeaf(var)    
-            phileaf = chain.GetLeaf('MissingET.Phi')        
+            phileaf = chain.GetLeaf('MissingET.Phi')    
+            etaleaf = chain.GetLeaf('MissingET.Eta')      
             
-            (met, metphi) = fill_MET_hist(chain, leaf, entry, MET, phileaf)   
+            (met, metphi, meteta) = fill_MET_hist(chain, leaf, entry, MET, phileaf, etaleaf)   
          
         if (analyze_this['MT (NON-LEAF)']):
             #print "ok got here"
             #print "here ",e_maxpt, e_maxpt_phi, u_maxpt, u_maxpt_phi, met, metphi
             
-            mt_val = get_mt(e_maxpt, e_maxpt_phi, u_maxpt, u_maxpt_phi, met, metphi)
+            if (not(is_muon or is_electron)):
+                mt_val = 0
+            else:
+                #print e_maxpt, e_maxpt_phi, u_maxpt, u_maxpt_phi, met, metphi
+                #print is_electron, is_muon
+                mt_val = get_mt(lpt, lphi, met, metphi)
+                
             if mt_val == 0:
                 MT.Fill(INVALID)
             else:
@@ -271,17 +312,25 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             
         if (analyze_this['DELTA PHI (NON-LEAF)']):
             
-            if e_maxpt > u_maxpt:
-                lphi = e_maxpt_phi
-            else:
-                lphi = u_maxpt_phi
-            
             dphi_metlep_val = delta_phi(metphi, lphi)
             dphi_metjet_val = delta_phi(metphi, jet_maxpt_phi) 
             
             DPHI_metlep.Fill(dphi_metlep_val)
             DPHI_metjet.Fill(dphi_metjet_val)
             
+        if (analyze_this['DELTA R (NON-LEAF)']):
+            
+            dr_val = delta_R(jet_maxpt_phi, lphi, jet_maxpt_eta, leta)
+                
+            if dr_val == 0:
+                dr_val = INVALID
+            
+            #elif dr_val > 3.0 and dr_val < 3.3:
+                #print jet_maxpt_phi, lphi, jet_maxpt_eta, leta
+                
+            DR.Fill(dr_val) 
+            
+
     
     
     
@@ -338,6 +387,11 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
         #normalize
         DPHI_metlep.Scale(1/norm)
         DPHI_metjet.Scale(1/norm)
+        
+    if (analyze_this['DELTA R (NON-LEAF)']):
+        
+        #normalize
+        DR.Scale(1/norm)
 
     print ""
     print "\nDone!\n"
@@ -376,6 +430,8 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
     DPHI_metlep.Write(eventtype + "dphi_metlep")
     DPHI_metjet.Write(eventtype + "dphi_metjet")
     
+    DR.Write(eventtype + "deltaR")
+    
     
 
 
@@ -386,7 +442,7 @@ def main():
     
     # array of stuff needed to be analyzed
     # NON-LEAF refers to internal analysis from other leaves
-    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MT (NON-LEAF)', 'HT (NON-LEAF)', 'DELTA PHI (NON-LEAF)']
+    want_leaves = ['Jet.PT', 'Jet.BTag', 'Electron.PT', 'MuonTight.PT', 'MuonTight.Phi', 'MissingET.MET', 'MT (NON-LEAF)', 'HT (NON-LEAF)', 'DELTA PHI (NON-LEAF)', 'DELTA R (NON-LEAF)']
     
     # bits to be set if want analyzed:
     # Jet.PT = 0 (rightmost binary bit)

@@ -624,10 +624,10 @@ def draw_DPHImj(DPHI_tt, DPHI_qcd, DPHI_wjet):
     
     #begin drawing stuff
     c1 = Canvas()
-    DPHI_wjet.SetStats(0)
-    DPHI_wjet.Draw('HIST')
+    DPHI_qcd.SetStats(0)
+    DPHI_qcd.Draw('HIST')
     DPHI_tt.Draw('HIST SAME')
-    DPHI_qcd.Draw('HIST SAME')
+    DPHI_wjet.Draw('HIST SAME')
     
     
     #make legend
@@ -638,9 +638,37 @@ def draw_DPHImj(DPHI_tt, DPHI_qcd, DPHI_wjet):
     c1.SaveAs("DPHI_metjet.pdf");
     
     #make the plots wait on screen
-    wait(True)        
+    #wait(True)        
+    
+def draw_DR(DR_tt, DR_qcd, DR_wjet):
+
+    #set line colors
+    DR_tt.SetLineColor(4)
+    DR_qcd.SetLineColor(8)
+    DR_wjet.SetLineColor(2)
+       
+    DR_tt.legendstyle = 'L'
+    DR_qcd.legendstyle = 'L'
+    DR_wjet.legendstyle = 'L'
     
     
+    #begin drawing stuff
+    c1 = Canvas()
+    DR_qcd.SetStats(0)
+    DR_qcd.Draw('HIST')
+    DR_tt.Draw('HIST SAME')
+    DR_wjet.Draw('HIST SAME')
+    
+    
+    #make legend
+    l1 = Legend([DR_tt, DR_qcd, DR_wjet], textfont = 42, textsize = .03)
+    l1.Draw()
+    
+    #save as pdf
+    c1.SaveAs("DeltaR.pdf");
+    
+    #make the plots wait on screen
+    wait(True)         
     
         
     

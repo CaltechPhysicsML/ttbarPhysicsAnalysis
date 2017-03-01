@@ -260,7 +260,7 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
             
             # analyze with Jet.PT because HT is sum of Jet.PTs
             if (analyze_this['HT (NON-LEAF)']):
-                HTfill = True
+                HTfill = True                
             else:
                 HTfill = False
             
@@ -333,65 +333,64 @@ def do_analysis(chain, analyze_this, outfile, eventtype):
 
     
     
-    
 
     if (analyze_this['Jet.PT']):
 
         # normalize
-        numJets.Scale(1/norm)
-        max_jetpt_per_event.Scale(1/norm)
-        min_jetpt_per_event.Scale(1/norm)
+        numJets.Scale(1/(numJets.Integral()))
+        max_jetpt_per_event.Scale(1/(max_jetpt_per_event.Integral()))
+        min_jetpt_per_event.Scale(1/(min_jetpt_per_event.Integral()))
     
     if (analyze_this['Jet.BTag']):
    
         # normalize
-        tight.Scale(1/norm)
-        medium.Scale(1/norm)
-        loose.Scale(1/norm) 
+        tight.Scale(1/(tight.Integral()))
+        medium.Scale(1/(medium.Integral()))
+        loose.Scale(1/(loose.Integral())) 
         
     if (analyze_this['Electron.PT']):        
                 
         # normalize
-        numElectrons.Scale(1/norm)
-        max_ept_per_event.Scale(1/norm)
-        min_ept_per_event.Scale(1/norm)
+        numElectrons.Scale(1/(numElectrons.Integral()))
+        max_ept_per_event.Scale(1/(max_ept_per_event.Integral()))
+        min_ept_per_event.Scale(1/(min_ept_per_event.Integral()))
         
         print "\nentries: " + str(nentries) + " noeleaf number: " + str(noeleaf) 
         
     if (analyze_this['MuonTight.PT']):        
                 
         # normalize
-        numMuons.Scale(1/norm)
-        max_upt_per_event.Scale(1/norm)
-        min_upt_per_event.Scale(1/norm)
+        numMuons.Scale(1/(numMuons.Integral()))
+        max_upt_per_event.Scale(1/(max_upt_per_event.Integral()))
+        min_upt_per_event.Scale(1/(min_upt_per_event.Integral()))
         
         print "\nentries: " + str(nentries) + " nouleaf number: " + str(nouleaf) 
 
     if (analyze_this['MissingET.MET']):
    
         # normalize
-        MET.Scale(1/norm)
+        MET.Scale(1/(MET.Integral()))
         
     if (analyze_this['MT (NON-LEAF)']):
         
         #normalize
-        MT.Scale(1/norm)
+        MT.Scale(1/(MT.Integral()))
 
     if (analyze_this['HT (NON-LEAF)']):
         
         #normalize
-        HT.Scale(1/norm)
+        HT.Scale(1/(HT.Integral()))
         
     if (analyze_this['DELTA PHI (NON-LEAF)']):
         
         #normalize
-        DPHI_metlep.Scale(1/norm)
-        DPHI_metjet.Scale(1/norm)
+        DPHI_metlep.Scale(1/(DPHI_metlep.Integral()))
+        DPHI_metjet.Scale(1/(DPHI_metjet.Integral()))
         
     if (analyze_this['DELTA R (NON-LEAF)']):
         
         #normalize
-        DR.Scale(1/norm)
+        DR.Scale(1/(DR.Integral()))
 
     print ""
     print "\nDone!\n"
